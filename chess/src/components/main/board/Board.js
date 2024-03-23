@@ -1,10 +1,12 @@
 import Square from "./Square";
 
 import React, { useState } from "react";
+import Turn from "./Turn";
 
 function Board() {
   const [firstClick, setFirstClick] = useState(null);
   const [secondClick, setSecondClick] = useState(null);
+  const [turnOrder, setTurnOrder] = useState(false)
 const [boardData, setBoardData] = useState({
     a8: { piece: "b_rook", color: "coral" },
     b8: { piece: "b_knight", color: "white" },
@@ -72,11 +74,19 @@ const [boardData, setBoardData] = useState({
     h1: { piece: "w_rook", color: "coral" },
   });
 
+
+  function handleTurn(){
+    setTurnOrder(prevState => !prevState)
+  }
+
   function handleMove(data) {
     // Move is only needed if the square isnt empty.
 
     const notation = data.notation
     const piece = data.piece
+
+    
+    
     if(piece || firstClick){
         if (firstClick === null) {
             setFirstClick(notation);
@@ -85,25 +95,34 @@ const [boardData, setBoardData] = useState({
 
             // Move the piece to the new square
             const pieceToMove = boardData[firstClick].piece;
+
             console.log(pieceToMove, 'moved into', notation)
+
             setBoardData(prev => ({
               ...prev,
               [firstClick]: { ...prev[firstClick], piece: "" }, 
               [notation]: { ...prev[notation], piece: pieceToMove }, 
             }));
+
+            handleTurn()
+
             setFirstClick(null); // Reset the first click
+
+            console.log(boardData)
           }
     }
 
   }
 
   return (
+    <div>
+      <Turn status={turnOrder}/>
     <div
       style={{
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "100vh",
+        height: "90vh",
       }}
     >
       <div
@@ -122,6 +141,8 @@ const [boardData, setBoardData] = useState({
         ))}
       </div>
     </div>
+    </div>
+
   );
 }
 
