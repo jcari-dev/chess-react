@@ -3,11 +3,13 @@ import Square from "./Square";
 import React, { useState } from "react";
 import Turn from "./Turn";
 
+import validatePieceSelection from "../../../utils/Validation";
+
 function Board() {
   const [firstClick, setFirstClick] = useState(null);
   const [secondClick, setSecondClick] = useState(null);
-  const [turnOrder, setTurnOrder] = useState(false)
-const [boardData, setBoardData] = useState({
+  const [turnOrder, setTurnOrder] = useState(false);
+  const [boardData, setBoardData] = useState({
     a8: { piece: "b_rook", color: "coral" },
     b8: { piece: "b_knight", color: "white" },
     c8: { piece: "b_bishop", color: "coral" },
@@ -74,75 +76,73 @@ const [boardData, setBoardData] = useState({
     h1: { piece: "w_rook", color: "coral" },
   });
 
-
-  function handleTurn(){
-    setTurnOrder(prevState => !prevState)
+  function handleTurn() {
+    setTurnOrder((prevState) => !prevState);
   }
 
   function handleMove(data) {
     // Move is only needed if the square isnt empty.
 
-    const notation = data.notation
-    const piece = data.piece
+    const notation = data.notation;
+    const piece = data.piece;
 
-    
-    
-    if(piece || firstClick){
+    if (piece || firstClick) {
+      if (firstClick || validatePieceSelection({ piece: piece, turn: turnOrder })) {
         if (firstClick === null) {
-            setFirstClick(notation);
-            console.log(piece, 'was selected')
-          } else {
+          setFirstClick(notation);
+          console.log(piece, "was selected");
+        } else {
+          // Move the piece to the new square
+          const pieceToMove = boardData[firstClick].piece;
 
-            // Move the piece to the new square
-            const pieceToMove = boardData[firstClick].piece;
+          console.log(pieceToMove, "moved into", notation);
 
-            console.log(pieceToMove, 'moved into', notation)
+          setBoardData((prev) => ({
+            ...prev,
+            [firstClick]: { ...prev[firstClick], piece: "" },
+            [notation]: { ...prev[notation], piece: pieceToMove },
+          }));
 
-            setBoardData(prev => ({
-              ...prev,
-              [firstClick]: { ...prev[firstClick], piece: "" }, 
-              [notation]: { ...prev[notation], piece: pieceToMove }, 
-            }));
+          handleTurn();
 
-            handleTurn()
+          setFirstClick(null); // Reset the first click
 
-            setFirstClick(null); // Reset the first click
-
-            console.log(boardData)
-          }
+          console.log(boardData);
+        }
+      } else {
+        console.log('Not your turn.')
+      }
     }
-
   }
 
   return (
     <div>
-      <Turn status={turnOrder}/>
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "90vh",
-      }}
-    >
+      <Turn status={turnOrder} />
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(8, 1fr)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "90vh",
         }}
       >
-        {Object.entries(boardData).map(([notation, { piece, color }]) => (
-          <div
-          key={notation}
-          onClick={() => handleMove({notation: notation, piece: piece})}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(8, 1fr)",
+          }}
         >
-            <Square piece={piece} color={color} notation={notation} />
-          </div>
-        ))}
+          {Object.entries(boardData).map(([notation, { piece, color }]) => (
+            <div
+              key={notation}
+              onClick={() => handleMove({ notation: notation, piece: piece })}
+            >
+              <Square piece={piece} color={color} notation={notation} />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
-    </div>
-
   );
 }
 

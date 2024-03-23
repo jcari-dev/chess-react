@@ -5,9 +5,9 @@ function Turn({status}) {
   let text = ""
 
   if(status === false){
-    text = "White's turn."
+    text = "White's move."
   } else {
-    text = "Black's turn."
+    text = "Black's move."
   }
   return (
     <div>
