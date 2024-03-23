@@ -1,18 +1,28 @@
+import axios from 'axios';
 
+function validatePieceSelection(data) {
+    const pieceColor = data.piece[0];
 
-function validatePieceSelection(data){
-
-    // This essentially takes [b] from b_pawn, which would mean that it is the `black` pawn, etc.
-    const pieceColor = data.piece[0]
-
-
-    if(pieceColor === "b" && data.turn === true){
-        return true
-    } else if(pieceColor === "w" && data.turn === false){
-        return true
-    } 
-    return false
-
+    if ((pieceColor === "b" && data.turn === true) || (pieceColor === "w" && data.turn === false)) {
+        return true;
+    }
+    return false;
 }
 
-export default validatePieceSelection;
+async function ValidateMove(data) {
+    try {
+        const response = await axios.post(url, data);
+        if(response.data && response.data.valid){
+            return true;
+        } else {
+            return false
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        return false;
+    }
+}
+
+
+export { validatePieceSelection, ValidateMove };
