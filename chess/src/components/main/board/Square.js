@@ -44,8 +44,8 @@ function Square({ piece, color, notation }) {
   return (
     <div
       style={{
-        width: "75px",
-        height: "75px",
+        width: "64px",
+        height: "64px",
         backgroundColor: color,
         justifyContent: 'center',
         alignItems: 'center',
