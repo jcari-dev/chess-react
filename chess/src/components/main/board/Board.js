@@ -11,6 +11,8 @@ function Board() {
   const [turnCount, setTurnCount] = useState(0)
   const [firstClick, setFirstClick] = useState(null);
   const [turnOrder, setTurnOrder] = useState(false);
+  const [captureOccurred, setCaptureOccurred] = useState(false);
+  const [halfmoveClock, setHalfmoveClock] = useState(0);
   const [boardData, setBoardData] = useState({
     a8: { piece: "b_rook", color: "coral" },
     b8: { piece: "b_knight", color: "white" },
@@ -83,6 +85,15 @@ function Board() {
     setTurnCount(turnCount + 1)
   }
 
+  function handleHalfmoveClock(reset=false){
+
+    if(reset){
+      setHalfmoveClock(0)
+    } else {
+      setHalfmoveClock(halfmoveClock + 1)
+    }
+  }
+
   async function handleMove(data) {
     // Move is only needed if the square isnt empty.
 
@@ -100,6 +111,7 @@ function Board() {
         } else {
           // Move the piece to the new square
           const pieceToMove = boardData[firstClick].piece;
+
           const isMoveValid = await ValidateMove({
             board: boardData,
             pieceMoving: pieceToMove,
