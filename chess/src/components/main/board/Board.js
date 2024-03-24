@@ -8,6 +8,7 @@ import { validatePieceSelection,
 } from "../../../utils/Validation";
 
 function Board() {
+  const [turnCount, setTurnCount] = useState(0)
   const [firstClick, setFirstClick] = useState(null);
   const [turnOrder, setTurnOrder] = useState(false);
   const [boardData, setBoardData] = useState({
@@ -79,6 +80,7 @@ function Board() {
 
   function handleTurn() {
     setTurnOrder((prevState) => !prevState);
+    setTurnCount(turnCount + 1)
   }
 
   async function handleMove(data) {
@@ -102,8 +104,9 @@ function Board() {
             board: boardData,
             pieceMoving: pieceToMove,
             target: notation,
-          })
-          console.log(isMoveValid)
+            turnCount: turnCount
+          });
+
           if (isMoveValid) {
             console.log(pieceToMove, "moved into", notation);
 
@@ -128,7 +131,7 @@ function Board() {
 
   return (
     <div>
-      <Turn status={turnOrder} />
+      <Turn status={turnOrder} turnNo={turnCount}/>
       <div
         style={{
           display: "flex",

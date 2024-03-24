@@ -18,9 +18,10 @@ async function ValidateMove(data) {
     const token = await getCsrfToken();
     const response = await axios.post(
         "http://127.0.0.1:8000/api/validate-move/",
-      data,
-
-      {
+      
+        data,
+      
+        {
         headers: {
           "Content-Type": "application/json",
           "X-CSRFToken": token,

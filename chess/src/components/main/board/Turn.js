@@ -1,13 +1,13 @@
 import { Heading } from "@chakra-ui/react";
 
-function Turn({status}) {
+function Turn({status, turnNo}) {
 
   let text = ""
 
   if(status === false){
-    text = "White's move."
+    text = `White's move. (${turnNo})`
   } else {
-    text = "Black's move."
+    text = `Black's move. (${turnNo})`
   }
   return (
     <div>
