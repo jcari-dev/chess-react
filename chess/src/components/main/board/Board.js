@@ -3,11 +3,12 @@ import Square from "./Square";
 import React, { useState } from "react";
 import Turn from "./Turn";
 
-import validatePieceSelection from "../../../utils/Validation";
+import { validatePieceSelection, 
+  ValidateMove,
+} from "../../../utils/Validation";
 
 function Board() {
   const [firstClick, setFirstClick] = useState(null);
-  const [secondClick, setSecondClick] = useState(null);
   const [turnOrder, setTurnOrder] = useState(false);
   const [boardData, setBoardData] = useState({
     a8: { piece: "b_rook", color: "coral" },
@@ -80,37 +81,47 @@ function Board() {
     setTurnOrder((prevState) => !prevState);
   }
 
-  function handleMove(data) {
+  async function handleMove(data) {
     // Move is only needed if the square isnt empty.
 
     const notation = data.notation;
     const piece = data.piece;
 
     if (piece || firstClick) {
-      if (firstClick || validatePieceSelection({ piece: piece, turn: turnOrder })) {
+      if (
+        firstClick ||
+        validatePieceSelection({ piece: piece, turn: turnOrder })
+      ) {
         if (firstClick === null) {
           setFirstClick(notation);
           console.log(piece, "was selected");
         } else {
           // Move the piece to the new square
           const pieceToMove = boardData[firstClick].piece;
+          const isMoveValid = await ValidateMove({
+            board: boardData,
+            pieceMoving: pieceToMove,
+            target: notation,
+          })
+          console.log(isMoveValid)
+          if (isMoveValid) {
+            console.log(pieceToMove, "moved into", notation);
 
-          console.log(pieceToMove, "moved into", notation);
+            setBoardData((prev) => ({
+              ...prev,
+              [firstClick]: { ...prev[firstClick], piece: "" },
+              [notation]: { ...prev[notation], piece: pieceToMove },
+            }));
 
-          setBoardData((prev) => ({
-            ...prev,
-            [firstClick]: { ...prev[firstClick], piece: "" },
-            [notation]: { ...prev[notation], piece: pieceToMove },
-          }));
+            handleTurn();
 
-          handleTurn();
+            setFirstClick(null); // Reset the first click
 
-          setFirstClick(null); // Reset the first click
-
-          console.log(boardData);
+            console.log(boardData);
+          }
         }
       } else {
-        console.log('Not your turn.')
+        console.log("Not your turn.");
       }
     }
   }
