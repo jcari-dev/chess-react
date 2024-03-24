@@ -14,6 +14,7 @@ function Board() {
   const [turnOrder, setTurnOrder] = useState(false);
   const [captureOccurred, setCaptureOccurred] = useState(false);
   const [halfmoveClock, setHalfmoveClock] = useState(0);
+  const [castlingRights, setCastlingRights] = useState("KQkq")
   const [boardData, setBoardData] = useState({
     a8: { piece: "b_rook", color: "coral" },
     b8: { piece: "b_knight", color: "white" },
@@ -94,6 +95,27 @@ function Board() {
     }
   }
 
+  function handleCastling(board){
+
+    if(board['e1'].piece !== "w_king"){
+      setCastlingRights(castlingRights.replace("K", "").replace("Q", ""))
+    } else if(board['h1'].piece !== "w_rook"){
+      setCastlingRights(castlingRights.replace("K", ""))
+    } else if(board['a1'].piece !== "w_rook"){
+      setCastlingRights(castlingRights.replace("Q", ""))
+    } else if(board['e8'].piece !== "b_king"){
+      setCastlingRights(castlingRights.replace("k", "").replace("q", ""))
+    } else if(board['h8'].piece !== "b_rook"){
+      setCastlingRights(castlingRights.replace("k", ""))
+    } else if(board['a8'].piece !== "b_rook"){
+      setCastlingRights(castlingRights.replace("q", ""))
+    }
+
+    if(castlingRights === ""){
+      setCastlingRights("-")
+    }
+  }
+
   function listenForCaptures(data) {
 
     if(data.captured && data.attacker){
@@ -134,7 +156,8 @@ function Board() {
             pieceMoving: pieceToMove,
             target: notation,
             turnCount: turnCount,
-            halfmoveClock: halfmoveClock
+            halfmoveClock: halfmoveClock,
+            castlingRights: castlingRights
           });
 
           if (isMoveValid) {
@@ -146,13 +169,18 @@ function Board() {
               [notation]: { ...prev[notation], piece: pieceToMove },
             }));
 
-            handleTurn();
+            // Turn is over at this point and things have been moved 
+  
 
             const possiblePieceBeingCaptured = boardData[notation].piece;
 
             if (possiblePieceBeingCaptured) {
               console.log(possiblePieceBeingCaptured, "captured");
             }
+            
+            handleCastling(boardData)
+            handleTurn();
+
 
             if (
               pieceToMove.includes("pawn") ||
