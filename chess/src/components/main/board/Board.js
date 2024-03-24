@@ -14,7 +14,8 @@ function Board() {
   const [turnOrder, setTurnOrder] = useState(false);
   const [captureOccurred, setCaptureOccurred] = useState(false);
   const [halfmoveClock, setHalfmoveClock] = useState(0);
-  const [castlingRights, setCastlingRights] = useState("KQkq")
+  const [castlingRights, setCastlingRights] = useState("KQkq");
+  const [enPassant, setEnPassant] = useState("");
   const [boardData, setBoardData] = useState({
     a8: { piece: "b_rook", color: "coral" },
     b8: { piece: "b_knight", color: "white" },
@@ -87,6 +88,130 @@ function Board() {
     setTurnCount(turnCount + 1);
   }
 
+  function getLeftAndRightSquares(location) {
+    const file = location[0];
+
+    const fileToLeft = {
+      b: "a",
+      c: "b",
+      d: "c",
+      e: "d",
+      f: "e",
+      g: "f",
+      h: "g",
+      // 'a' has nothing to its left
+    };
+
+    const fileToRight = {
+      a: "b",
+      b: "c",
+      c: "d",
+      d: "e",
+      e: "f",
+      f: "g",
+      g: "h",
+      // 'h' has nothing to its right
+    };
+
+    const leftFile = fileToLeft[file];
+    const rightFile = fileToRight[file];
+    let squareToTheLeft = "";
+    let squareToTheRight = "";
+
+    if (leftFile) {
+      squareToTheLeft = leftFile + location[1];
+    }
+
+    if (rightFile) {
+      squareToTheRight = rightFile + location[1];
+    }
+
+    return {
+      squareToTheLeft: squareToTheLeft,
+      squareToTheRight: squareToTheRight,
+    };
+  }
+
+  function adjacentEnemyPawn(
+    board,
+    pawnToCheck,
+    squareToTheLeft,
+    squareToTheRight
+  ) {
+    console.log("Checking for adjacent pawns at: ", pawnToCheck);
+    const colorOfPawnToCheck = pawnToCheck[0]; // should be either b or w
+    const result = {};
+    result[squareToTheLeft] = false;
+    result[squareToTheRight] = false;
+    if (
+      squareToTheLeft &&
+      board[squareToTheLeft].piece[0] !== colorOfPawnToCheck
+    ) {
+      result[squareToTheLeft] = true;
+    }
+
+    if (
+      squareToTheRight &&
+      board[squareToTheRight].piece[0] !== colorOfPawnToCheck
+    ) {
+      result[squareToTheRight] = true;
+    }
+
+    if (result[squareToTheLeft] && result[squareToTheRight]) {
+      return result;
+    }
+
+    return false;
+  }
+
+  function handleEnPassant(board, movingFrom, movedTo) {
+    // This function is supposed to only run if a pawn is moved.
+
+    const startRank = movingFrom[1];
+    const endRank = movedTo[1];
+    // En Passant is only possible in these ranks 3 and 6.
+    const conditions = {
+      2: "3",
+      7: "6",
+    };
+
+    // Check if the move matches one of the en passant conditions to determine the target square
+    if (
+      conditions[startRank] &&
+      ((startRank === "2" && endRank === "4") ||
+        (startRank === "7" && endRank === "5"))
+    ) {
+      console.log(
+        "En Passant Possible at: ",
+        movedTo[0] + conditions[startRank]
+      );
+
+      console.log("This is movedTo: ", movedTo);
+      const leftRightSquares = getLeftAndRightSquares(movedTo);
+
+      console.log(leftRightSquares);
+
+      const enemyPawnAdjacent = adjacentEnemyPawn(
+        board,
+        movingFrom,
+        leftRightSquares.squareToTheLeft,
+        leftRightSquares.squareToTheRight
+      );
+
+      console.log(enemyPawnAdjacent);
+
+      if (enemyPawnAdjacent) {
+        const keys = Object.keys(enemyPawnAdjacent);
+        // keys[0] and keys[1] should stand for enemyPawnAdjacent.squareToTheLeft and enemyPawnAdjacent.squareToTheRight
+        console.log("Enemy pawns detected at: ", keys[0], keys[1]);
+        setEnPassant(movedTo[0] + conditions[startRank]);
+        return movedTo[0] + conditions[startRank];
+      }
+    }
+    setEnPassant("");
+    return false;
+  }
+
   function handleHalfmoveClock(reset = false) {
     if (reset) {
       setHalfmoveClock(0);
@@ -95,34 +220,32 @@ function Board() {
     }
   }
 
-  function handleCastling(board){
-
-    if(board['e1'].piece !== "w_king"){
-      setCastlingRights(castlingRights.replace("K", "").replace("Q", ""))
-    } else if(board['h1'].piece !== "w_rook"){
-      setCastlingRights(castlingRights.replace("K", ""))
-    } else if(board['a1'].piece !== "w_rook"){
-      setCastlingRights(castlingRights.replace("Q", ""))
-    } else if(board['e8'].piece !== "b_king"){
-      setCastlingRights(castlingRights.replace("k", "").replace("q", ""))
-    } else if(board['h8'].piece !== "b_rook"){
-      setCastlingRights(castlingRights.replace("k", ""))
-    } else if(board['a8'].piece !== "b_rook"){
-      setCastlingRights(castlingRights.replace("q", ""))
+  function handleCastling(board) {
+    if (board["e1"].piece !== "w_king") {
+      setCastlingRights(castlingRights.replace("K", "").replace("Q", ""));
+    } else if (board["h1"].piece !== "w_rook") {
+      setCastlingRights(castlingRights.replace("K", ""));
+    } else if (board["a1"].piece !== "w_rook") {
+      setCastlingRights(castlingRights.replace("Q", ""));
+    } else if (board["e8"].piece !== "b_king") {
+      setCastlingRights(castlingRights.replace("k", "").replace("q", ""));
+    } else if (board["h8"].piece !== "b_rook") {
+      setCastlingRights(castlingRights.replace("k", ""));
+    } else if (board["a8"].piece !== "b_rook") {
+      setCastlingRights(castlingRights.replace("q", ""));
     }
 
-    if(castlingRights === ""){
-      setCastlingRights("-")
+    if (castlingRights === "") {
+      setCastlingRights("-");
     }
   }
 
   function listenForCaptures(data) {
-
-    if(data.captured && data.attacker){
+    if (data.captured && data.attacker) {
       const colorOfPieceMoving = data.captured[0]; // this is expected to be either b or w as well
       const colorOfPieceCaptured = data.attacker[0]; // this is expected to be either b or w as well
-  
-      console.log(colorOfPieceCaptured, colorOfPieceMoving)
+
+      console.log(colorOfPieceCaptured, colorOfPieceMoving);
       if (colorOfPieceMoving !== colorOfPieceCaptured) {
         setCaptureOccurred(true);
         return true;
@@ -130,7 +253,7 @@ function Board() {
     }
 
     setCaptureOccurred(false);
-    console.log('No capture occurred')
+    console.log("No capture occurred");
     return false;
   }
   async function handleMove(data) {
@@ -157,7 +280,8 @@ function Board() {
             target: notation,
             turnCount: turnCount,
             halfmoveClock: halfmoveClock,
-            castlingRights: castlingRights
+            castlingRights: castlingRights,
+            enPassant: enPassant,
           });
 
           if (isMoveValid) {
@@ -169,18 +293,19 @@ function Board() {
               [notation]: { ...prev[notation], piece: pieceToMove },
             }));
 
-            // Turn is over at this point and things have been moved 
-  
+            // Turn is over at this point and things have been moved
 
             const possiblePieceBeingCaptured = boardData[notation].piece;
 
             if (possiblePieceBeingCaptured) {
               console.log(possiblePieceBeingCaptured, "captured");
             }
-            
-            handleCastling(boardData)
-            handleTurn();
+            if (pieceToMove.includes("pawn")) {
+              handleEnPassant(boardData, firstClick, notation);
+            }
 
+            handleCastling(boardData);
+            handleTurn();
 
             if (
               pieceToMove.includes("pawn") ||
@@ -189,7 +314,7 @@ function Board() {
                 attacker: pieceToMove,
               })
             ) {
-              console.log("Halfmove clock resets.")
+              console.log("Halfmove clock resets.");
               const reset = true;
               handleHalfmoveClock(reset);
             } else {
