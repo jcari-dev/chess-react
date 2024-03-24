@@ -3,12 +3,13 @@ import Square from "./Square";
 import React, { useState } from "react";
 import Turn from "./Turn";
 
-import { validatePieceSelection, 
+import {
+  validatePieceSelection,
   ValidateMove,
 } from "../../../utils/Validation";
 
 function Board() {
-  const [turnCount, setTurnCount] = useState(0)
+  const [turnCount, setTurnCount] = useState(0);
   const [firstClick, setFirstClick] = useState(null);
   const [turnOrder, setTurnOrder] = useState(false);
   const [captureOccurred, setCaptureOccurred] = useState(false);
@@ -82,18 +83,34 @@ function Board() {
 
   function handleTurn() {
     setTurnOrder((prevState) => !prevState);
-    setTurnCount(turnCount + 1)
+    setTurnCount(turnCount + 1);
   }
 
-  function handleHalfmoveClock(reset=false){
-
-    if(reset){
-      setHalfmoveClock(0)
+  function handleHalfmoveClock(reset = false) {
+    if (reset) {
+      setHalfmoveClock(0);
     } else {
-      setHalfmoveClock(halfmoveClock + 1)
+      setHalfmoveClock(halfmoveClock + 1);
     }
   }
 
+  function listenForCaptures(data) {
+
+    if(data.captured && data.attacker){
+      const colorOfPieceMoving = data.captured[0]; // this is expected to be either b or w as well
+      const colorOfPieceCaptured = data.attacker[0]; // this is expected to be either b or w as well
+  
+      console.log(colorOfPieceCaptured, colorOfPieceMoving)
+      if (colorOfPieceMoving !== colorOfPieceCaptured) {
+        setCaptureOccurred(true);
+        return true;
+      }
+    }
+
+    setCaptureOccurred(false);
+    console.log('No capture occurred')
+    return false;
+  }
   async function handleMove(data) {
     // Move is only needed if the square isnt empty.
 
@@ -116,7 +133,8 @@ function Board() {
             board: boardData,
             pieceMoving: pieceToMove,
             target: notation,
-            turnCount: turnCount
+            turnCount: turnCount,
+            halfmoveClock: halfmoveClock
           });
 
           if (isMoveValid) {
@@ -129,6 +147,26 @@ function Board() {
             }));
 
             handleTurn();
+
+            const possiblePieceBeingCaptured = boardData[notation].piece;
+
+            if (possiblePieceBeingCaptured) {
+              console.log(possiblePieceBeingCaptured, "captured");
+            }
+
+            if (
+              pieceToMove.includes("pawn") ||
+              listenForCaptures({
+                captured: possiblePieceBeingCaptured,
+                attacker: pieceToMove,
+              })
+            ) {
+              console.log("Halfmove clock resets.")
+              const reset = true;
+              handleHalfmoveClock(reset);
+            } else {
+              handleHalfmoveClock();
+            }
 
             setFirstClick(null); // Reset the first click
 
@@ -143,7 +181,7 @@ function Board() {
 
   return (
     <div>
-      <Turn status={turnOrder} turnNo={turnCount}/>
+      <Turn status={turnOrder} turnNo={turnCount} />
       <div
         style={{
           display: "flex",
