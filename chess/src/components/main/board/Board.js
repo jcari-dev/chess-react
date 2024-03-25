@@ -103,6 +103,27 @@ function Board() {
     }
   }
 
+  function updateHighlights(positions) {
+    const updatedBoard = { ...boardData }; // Create a shallow copy of the board
+    positions.forEach(function (position) {
+      if (updatedBoard[position]) {
+        updatedBoard[position].highlight = true;
+      }
+    });
+    setBoardData(updatedBoard);
+  }
+
+  function clearHighlights() {
+    console.log(boardData)
+    const updatedBoard = { ...boardData }; // Create a shallow copy of the board
+    Object.keys(updatedBoard).forEach(function (position) {
+      if (updatedBoard[position].highlight) {
+        updatedBoard[position].highlight = false;
+      }
+    });
+    setBoardData(updatedBoard);
+  }
+
   function listenForCaptures(data) {
     if (data.captured && data.attacker) {
       const colorOfPieceMoving = data.captured[0]; // this is expected to be either b or w as well
@@ -131,6 +152,8 @@ function Board() {
         validatePieceSelection({ piece: piece, turn: turnOrder })
       ) {
         if (firstClick === null) {
+          // This is basically when you click something.
+
           setFirstClick(notation);
           console.log(piece, "was selected");
           const validMoves = await getValidMoves({
@@ -144,7 +167,13 @@ function Board() {
           });
 
           setValidMoves(validMoves);
+
+          if (validMoves) {
+            updateHighlights(validMoves);
+          }
         } else {
+          clearHighlights();
+
           // Move the piece to the new square
           const pieceToMove = boardData[firstClick].piece;
 
@@ -157,7 +186,9 @@ function Board() {
             castlingRights: castlingRights,
             enPassant: enPassant,
           });
+
           console.log(validMoves, notation, "MOVING VALIDATION");
+
           if (validMoves.includes(notation)) {
             console.log(pieceToMove, "moved into", notation);
 
@@ -179,6 +210,7 @@ function Board() {
             }
 
             handleCastling(boardData);
+
             handleTurn();
 
             if (
@@ -196,8 +228,10 @@ function Board() {
             }
 
             setFirstClick(null); // Reset the first click
+            console.log("pre clearing: ", boardData)
 
-            console.log(boardData);
+            console.log("post clearing: ", boardData)
+
           } else {
             console.log("Illegal move.");
           }
@@ -225,14 +259,21 @@ function Board() {
             gridTemplateColumns: "repeat(8, 1fr)",
           }}
         >
-          {Object.entries(boardData).map(([notation, { piece, color }]) => (
-            <div
-              key={notation}
-              onClick={() => handleMove({ notation: notation, piece: piece })}
-            >
-              <Square piece={piece} color={color} notation={notation} />
-            </div>
-          ))}
+          {Object.entries(boardData).map(
+            ([notation, { piece, color, highlight }]) => (
+              <div
+                key={notation}
+                onClick={() => handleMove({ notation: notation, piece: piece })}
+              >
+                <Square
+                  piece={piece}
+                  color={color}
+                  notation={notation}
+                  highlight={highlight}
+                />
+              </div>
+            )
+          )}
         </div>
       </div>
     </div>
