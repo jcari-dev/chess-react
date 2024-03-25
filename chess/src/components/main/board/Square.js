@@ -27,9 +27,11 @@ const pieceToSVG = {
   w_pawn: WPawn,
 };
 
-function Square({ piece, color, notation }) {
+function Square({ piece, color, notation, highlight }) {
 
   const PieceSVG = piece ? pieceToSVG[piece] : null;
+
+  const border = highlight ? '2px solid teal' : ''
 
   function status(data){
     
@@ -49,7 +51,8 @@ function Square({ piece, color, notation }) {
         backgroundColor: color,
         justifyContent: 'center',
         alignItems: 'center',
-        display: 'flex'
+        display: 'flex',
+        border: border
       }}
       onClick={() =>{status({piece: piece, notation: notation})}}
     >
