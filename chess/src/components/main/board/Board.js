@@ -233,6 +233,7 @@ function Board() {
             console.log("post clearing: ", boardData)
 
           } else {
+            setFirstClick(null)
             console.log("Illegal move.");
           }
         }
@@ -240,6 +241,7 @@ function Board() {
         console.log("Not your turn.");
       }
     }
+    
   }
 
   return (
