@@ -3,15 +3,13 @@ import Square from "./Square";
 import React, { useState } from "react";
 import Turn from "./Turn";
 
-import {
-  validatePieceSelection,
-  ValidateMove,
-} from "../../../utils/Validation";
 import { getValidMoves, getLeftAndRightSquares } from "../../../utils/Moves";
-import { initBoard } from "../../../utils/Board";
+import { initBoard, updateMatch, isItMyTurn } from "../../../utils/Board";
 import { adjacentEnemyPawn } from "../../../utils/Logic";
 
-function Board() {
+
+
+function Board({ roomId, userId, otherPlayerId }) {
   const [turnCount, setTurnCount] = useState(0);
   const [firstClick, setFirstClick] = useState(null);
   const [turnOrder, setTurnOrder] = useState(false);
@@ -22,6 +20,7 @@ function Board() {
   const [validMoves, setValidMoves] = useState([]);
   const [boardData, setBoardData] = useState(initBoard);
 
+  
   function handleTurn() {
     setTurnOrder((prevState) => !prevState);
     setTurnCount(turnCount + 1);
@@ -114,7 +113,7 @@ function Board() {
   }
 
   function clearHighlights() {
-    console.log(boardData)
+    console.log(boardData);
     const updatedBoard = { ...boardData }; // Create a shallow copy of the board
     Object.keys(updatedBoard).forEach(function (position) {
       if (updatedBoard[position].highlight) {
@@ -140,6 +139,7 @@ function Board() {
     console.log("No capture occurred");
     return false;
   }
+
   async function handleMove(data) {
     // Move is only needed if the square isnt empty.
 
@@ -147,9 +147,12 @@ function Board() {
     const piece = data.piece;
 
     if (piece || firstClick) {
+      // console.log(firstClick, validatePieceSelection({ piece: piece, turn: turnOrder }))
+      const myTurn = await isItMyTurn(roomId, userId);
       if (
         firstClick ||
-        validatePieceSelection({ piece: piece, turn: turnOrder })
+        myTurn
+        // validatePieceSelection({ piece: piece, turn: turnOrder })
       ) {
         if (firstClick === null) {
           // This is basically when you click something.
@@ -176,16 +179,6 @@ function Board() {
 
           // Move the piece to the new square
           const pieceToMove = boardData[firstClick].piece;
-
-          const isMoveValid = await ValidateMove({
-            board: boardData,
-            pieceMoving: pieceToMove,
-            target: notation,
-            turnCount: turnCount,
-            halfmoveClock: halfmoveClock,
-            castlingRights: castlingRights,
-            enPassant: enPassant,
-          });
 
           console.log(validMoves, notation, "MOVING VALIDATION");
 
@@ -228,12 +221,27 @@ function Board() {
             }
 
             setFirstClick(null); // Reset the first click
-            console.log("pre clearing: ", boardData)
 
-            console.log("post clearing: ", boardData)
+            const matchUpdated = await updateMatch({
+              board: boardData,
+              pieceMoving: pieceToMove,
+              target: notation,
+              turnCount: turnCount,
+              halfmoveClock: halfmoveClock,
+              castlingRights: castlingRights,
+              enPassant: enPassant,
+              roomId: roomId,
+            });
 
+            console.log(boardData, "before updating?");
+            
+            if (matchUpdated) {
+              console.log("Match updated nicely.");
+              console.log(matchUpdated);
+              setBoardData(matchUpdated);
+            }
           } else {
-            setFirstClick(null)
+            setFirstClick(null);
             console.log("Illegal move.");
           }
         }
@@ -241,7 +249,6 @@ function Board() {
         console.log("Not your turn.");
       }
     }
-    
   }
 
   return (
