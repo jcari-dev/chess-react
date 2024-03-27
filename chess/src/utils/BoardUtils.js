@@ -1,5 +1,5 @@
 import { getCsrfToken } from "./Auth";
-import axios from 'axios';
+import axios from "axios";
 
 let initBoard = {
   a8: { piece: "b_rook", color: "coral", highlight: false },
@@ -69,78 +69,130 @@ let initBoard = {
 };
 
 async function updateMatch(data) {
-  // This function should take a square and a board.
-try {
+  try {
+    const token = await getCsrfToken();
 
-
-  const token = await getCsrfToken();
-  
-  const response = await axios.post(
+    const response = await axios.post(
       "http://127.0.0.1:8000/api/update-match/",
-    
-      data,
-    
-      {
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": token,
-      },
-      withCredentials: true,
-    }
-  );
-  
-  if (response.data && response.data.updated) {
-    console.log(response.data.updated, 'IT WAS UPDATED')
 
-    return response.data.boardData;
-  } else {
+      data,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        withCredentials: true,
+      }
+    );
+
+    if (response.data && response.data.updated) {
+      console.log(response.data.updated, "IT WAS UPDATED");
+
+      return response.data.boardData;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error("Error:", error);
     return false;
   }
-} catch (error) {
-  console.error("Error:", error);
-  return false;
 }
-}
-
 
 async function isItMyTurn(roomId, userId) {
   // This function should take a square and a board.
-try {
-  const data = {
-    roomId: roomId,
-    userId: userId
-  }
+  try {
+    const data = {
+      roomId: roomId,
+      userId: userId,
+    };
 
-  const token = await getCsrfToken();
-  
-  const response = await axios.post(
+    const token = await getCsrfToken();
+
+    const response = await axios.post(
       "http://127.0.0.1:8000/api/check-turn/",
-    
+
       data,
-    
+
       {
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": token,
-      },
-      withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        withCredentials: true,
+      }
+    );
+
+    console.log(response.data);
+
+    if (response.data && response.data.myTurn) {
+
+      return response.data;
+    } else {
+      return false;
     }
-  );
-
-  console.log(response.data, response.data.myTurn)
-  
-  if (response.data && response.data.myTurn) {
-    console.log(response.data.myTurn, 'IS IT YOUR TURN?')
-
-    return true;
-  } else {
+  } catch (error) {
+    console.error("Error:", error);
     return false;
   }
-} catch (error) {
-  console.error("Error:", error);
-  return false;
-}
 }
 
+async function getFEN(data) {
+  try {
+    const token = await getCsrfToken();
 
-export { initBoard, isItMyTurn, updateMatch };
+    const response = await axios.post(
+      "http://127.0.0.1:8000/api/get-fen/",
+
+      data,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        withCredentials: true,
+      }
+    );
+
+    if (response.data && response.data.fen) {
+      return response.data.fen;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    return false;
+  }
+}
+
+async function getTurn(data) {
+  try {
+    const token = await getCsrfToken();
+
+    const response = await axios.post(
+      "http://127.0.0.1:8000/api/get-turn/",
+
+      data,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        withCredentials: true,
+      }
+    );
+
+    if (response.data && response.data.turn) {
+      return response.data.turn;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    return false;
+  }
+}
+
+export { initBoard, isItMyTurn, updateMatch, getFEN, getTurn };

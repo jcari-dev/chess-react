@@ -20,7 +20,7 @@ async function getValidMoves(data) {
     );
     if (response.data && response.data.legalMoves) {
         const legalMoves = response.data.legalMoves
-        console.log(legalMoves)
+        // console.log(legalMoves)
       return legalMoves;
     } else {
       return false;
@@ -75,4 +75,34 @@ function getLeftAndRightSquares(location) {
   };
 }
 
-export { getValidMoves, getLeftAndRightSquares };
+async function isItAValidMove(data) {
+  // This function should take a square and a board.
+try {
+  const token = await getCsrfToken();
+  const response = await axios.post(
+      "http://127.0.0.1:8000/api/check-move-continuation/",
+    
+      data,
+    
+      {
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      withCredentials: true,
+    }
+  );
+  if (response.data && response.data.legalMoves) {
+      const legalMoves = response.data.legalMoves
+      // console.log(legalMoves)
+    return legalMoves;
+  } else {
+    return false;
+  }
+} catch (error) {
+  console.error("Error:", error);
+  return false;
+}
+}
+
+export { getValidMoves, getLeftAndRightSquares, isItAValidMove };

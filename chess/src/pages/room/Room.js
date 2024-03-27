@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { Spinner, Box, Center, Text } from "@chakra-ui/react";
 import axios from "axios";
 import { JoinRoom } from "../../utils/Room";
-import Board from "../../components/main/board/Board";
+import ChessBoard from "../../components/main/board/Boardv2";
 
 function Room() {
   const { roomId } = useParams();
@@ -60,7 +60,10 @@ function Room() {
           <p>Room ID: {roomId}</p>
           <p>Your ID: {userId}</p>
           <p>Other Player ID: {otherPlayerId}</p>
-          <Board userId={userId} otherPlayerId={otherPlayerId} roomId={roomId}/>
+          <br/>
+          <br/>
+          <br/>
+          <ChessBoard userId={userId} otherPlayerId={otherPlayerId} roomId={roomId}/>
         </div>
       )}
     </div>
