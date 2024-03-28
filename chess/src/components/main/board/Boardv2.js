@@ -13,6 +13,7 @@ import {
   updateMatch,
   isItMyTurn,
   getTurn,
+  getPlayerColor,
 } from "../../../utils/BoardUtils";
 import { adjacentEnemyPawn } from "../../../utils/Logic";
 
@@ -28,12 +29,19 @@ function Board({ roomId, userId, otherPlayerId }) {
   const [enPassant, setEnPassant] = useState("-");
   const [validMoves, setValidMoves] = useState([]);
   const [boardData, setBoardData] = useState(initBoard);
+  const [isMyTurn, setIsMyTurn] = useState(false);
+  const [isPlayerBlack, setIsPlayerBlack] = useState(false);
 
   useEffect(() => {
     const fetchTurn = async () => {
       try {
         const turnOnDB = await getTurn({ roomId });
         setTurnCount(turnOnDB); // Update state with fetched data
+        const playerColor = await getPlayerColor({
+          roomId: roomId,
+          userId: userId,
+        });
+        setIsPlayerBlack(playerColor);
       } catch (error) {
         console.error("Failed to fetch turn:", error);
         // Handle error, maybe set turnCount to a safe value or show error message
@@ -44,17 +52,17 @@ function Board({ roomId, userId, otherPlayerId }) {
   }, []); // Empty dependency array means this runs once on mount
 
   function handleTurn(pieceColor) {
-    console.log('This is turn handling', pieceColor)
+    console.log("This is turn handling", pieceColor);
 
-    let turn = turnCount
+    let turn = turnCount;
 
     setTurnOrder((prevState) => !prevState);
-    if(pieceColor[0] === "b"){
-      turn = turnCount + 1
+    if (pieceColor[0] === "b") {
+      turn = turnCount + 1;
       setTurnCount(turn);
     }
 
-    return turn
+    return turn;
   }
 
   function handleEnPassant(board, movingFrom, movedTo) {
@@ -81,8 +89,6 @@ function Board({ roomId, userId, otherPlayerId }) {
 
       console.log("This is movedTo: ", movedTo);
       const leftRightSquares = getLeftAndRightSquares(movedTo);
-
-      // console.log(leftRightSquares);
 
       const enemyPawnAdjacent = adjacentEnemyPawn(
         board,
@@ -175,13 +181,49 @@ function Board({ roomId, userId, otherPlayerId }) {
     console.log(boardData);
   }, [boardData]);
 
+  useEffect(() => {
+    // Define the polling logic within the effect
+    const pollForTurn = () => {
+      const intervalId = setInterval(async () => {
+        const result = await isItMyTurn(roomId, userId);
+        if (result && result.myTurn && result.boardData) {
+          setIsMyTurn(true); // It's your turn, update state
+          setBoardData(result.boardData);
+          clearInterval(intervalId); // Stop polling
+          setTurnCount(result.turnCount);
+        } else {
+          setIsMyTurn(false);
+          console.log("Not my turn yet, polling...");
+        }
+      }, 1000); // Poll every second
+
+      // Set a timeout for how long to poll (e.g., 5 minutes)
+      const timeoutId = setTimeout(() => {
+        clearInterval(intervalId); // Stop polling after 5 minutes
+        console.log("Polling timeout reached. Stopping polling.");
+      }, 3000000); // 30000 milliseconds = 0.5 minutes
+
+      return () => {
+        clearInterval(intervalId); // Cleanup interval on component unmount or deps change
+        clearTimeout(timeoutId); // Cleanup timeout as well
+      };
+    };
+
+    // Start polling if it's not yet the user's turn
+    if (!isMyTurn) {
+      return pollForTurn();
+    }
+  }, [isMyTurn, roomId, userId]); // Re-run effect if these dependencies change
+
   async function handleMove(data) {
     // Move is only needed if the square isnt empty.
 
     const myTurn = await isItMyTurn(roomId, userId);
 
+    setIsMyTurn(myTurn);
+
     if (myTurn.myTurn) {
-      if (data.piece && myTurn.color !== data.piece[0]) {
+      if (data.piece && myTurn.color !== data.piece[0] && firstClick === null) {
         console.log("Not your piece.");
       } else {
         if (firstClick === null) {
@@ -230,12 +272,11 @@ function Board({ roomId, userId, otherPlayerId }) {
             };
 
             let turn = turnCount;
-            
-            if(pieceToMove[0] === "b"){
-              turn = turnCount + 1
+
+            if (pieceToMove[0] === "b") {
+              turn = turnCount + 1;
               setTurnCount(turn);
             }
-        
 
             const validMove = await isItAValidMove({
               board: boardDataPrePosting,
@@ -253,9 +294,10 @@ function Board({ roomId, userId, otherPlayerId }) {
             console.log(boardDataPrePosting);
 
             setBoardData(boardDataPrePosting);
-            // console.log(boardData)
+
             setFirstClick(null);
             console.log("Piece should have been moved.");
+            setIsMyTurn(false);
           } else {
             console.log("Illegal move.");
             setFirstClick(null);
@@ -267,6 +309,9 @@ function Board({ roomId, userId, otherPlayerId }) {
       }
     }
   }
+
+  const boardEntries = Object.entries(boardData);
+  const orderedEntries = isPlayerBlack ? boardEntries.reverse() : boardEntries;
 
   return (
     <div>
@@ -285,21 +330,19 @@ function Board({ roomId, userId, otherPlayerId }) {
             gridTemplateColumns: "repeat(8, 1fr)",
           }}
         >
-          {Object.entries(boardData).map(
-            ([notation, { piece, color, highlight }]) => (
-              <div
-                key={notation}
-                onClick={() => handleMove({ notation: notation, piece: piece })}
-              >
-                <Square
-                  piece={piece}
-                  color={color}
-                  notation={notation}
-                  highlight={highlight}
-                />
-              </div>
-            )
-          )}
+          {orderedEntries.map(([notation, { piece, color, highlight }]) => (
+            <div
+              key={notation}
+              onClick={() => handleMove({ notation: notation, piece: piece })}
+            >
+              <Square
+                piece={piece}
+                color={color}
+                notation={notation}
+                highlight={highlight}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </div>

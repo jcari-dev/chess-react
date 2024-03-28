@@ -195,4 +195,37 @@ async function getTurn(data) {
   }
 }
 
-export { initBoard, isItMyTurn, updateMatch, getFEN, getTurn };
+async function getPlayerColor(data) {
+  try {
+    const token = await getCsrfToken();
+
+    const response = await axios.post(
+      "http://127.0.0.1:8000/api/get-player-color/",
+
+      data,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        withCredentials: true,
+      }
+    );
+
+    if (response.data && response.data.playerColor) {
+      if(response.data.playerColor === "black"){
+        return true
+      } else if(response.data.playerColor === "white"){
+        return false
+      }
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    return false;
+  }
+}
+
+export { initBoard, isItMyTurn, updateMatch, getFEN, getTurn, getPlayerColor };
