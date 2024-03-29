@@ -1,18 +1,16 @@
-import { Heading } from "@chakra-ui/react";
+import { Heading, Box } from "@chakra-ui/react";
 
-function Turn({status, turnNo}) {
+function Turn({myTurn}) {
+  let text = myTurn ? "Your turn." : "Awaiting on your opponent.";
 
-  let text = ""
-
-  if(status === false){
-    text = `White's move. (${turnNo})`
-  } else {
-    text = `Black's move. (${turnNo})`
-  }
   return (
-    <div>
+    <Box
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+    >
       <Heading>{text}</Heading>
-    </div>
+    </Box>
   );
 }
 

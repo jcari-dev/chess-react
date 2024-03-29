@@ -1,6 +1,8 @@
 import axios from "axios";
 import { getCsrfToken } from "./Auth";
 
+import endpoints from "./Endpoints";
+
 function validatePieceSelection(data) {
   const pieceColor = data.piece[0];
 
@@ -17,11 +19,11 @@ async function ValidateMove(data) {
   try {
     const token = await getCsrfToken();
     const response = await axios.post(
-        "http://127.0.0.1:8000/api/validate-move/",
-      
-        data,
-      
-        {
+      `${endpoints.validateMove}`,
+
+      data,
+
+      {
         headers: {
           "Content-Type": "application/json",
           "X-CSRFToken": token,
@@ -30,7 +32,7 @@ async function ValidateMove(data) {
       }
     );
     if (response.data && response.data.valid) {
-        console.log(response.data.valid)
+      console.log(response.data.valid);
       return true;
     } else {
       return false;

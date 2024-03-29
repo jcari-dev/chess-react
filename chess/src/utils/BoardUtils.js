@@ -1,3 +1,8 @@
+import { getCsrfToken } from "./Auth";
+import axios from "axios";
+
+import endpoints from "./Endpoints";
+
 let initBoard = {
   a8: { piece: "b_rook", color: "coral", highlight: false },
   b8: { piece: "b_knight", color: "white", highlight: false },
@@ -65,4 +70,163 @@ let initBoard = {
   h1: { piece: "w_rook", color: "coral", highlight: false },
 };
 
-export { initBoard };
+async function updateMatch(data) {
+  try {
+    const token = await getCsrfToken();
+
+    const response = await axios.post(
+      `${endpoints.updateMatch}`,
+
+      data,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        withCredentials: true,
+      }
+    );
+
+    if (response.data && response.data.updated) {
+      console.log(response.data.updated, "IT WAS UPDATED");
+
+      return response.data.boardData;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    return false;
+  }
+}
+
+async function isItMyTurn(roomId, userId) {
+  // This function should take a square and a board.
+  try {
+    const data = {
+      roomId: roomId,
+      userId: userId,
+    };
+
+    const token = await getCsrfToken();
+
+    const response = await axios.post(
+      `${endpoints.checkTurn}`,
+
+      data,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        withCredentials: true,
+      }
+    );
+
+    console.log(response.data);
+
+    if (response.data && response.data.myTurn) {
+      return response.data;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    return false;
+  }
+}
+
+async function getFEN(data) {
+  try {
+    const token = await getCsrfToken();
+
+    const response = await axios.post(
+      `${endpoints.getFen}`,
+
+      data,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        withCredentials: true,
+      }
+    );
+
+    if (response.data && response.data.fen) {
+      return response.data.fen;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    return false;
+  }
+}
+
+async function getTurn(data) {
+  try {
+    const token = await getCsrfToken();
+
+    const response = await axios.post(
+      `${endpoints.getTurn}`,
+
+      data,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        withCredentials: true,
+      }
+    );
+
+    if (response.data && response.data.turn) {
+      return response.data.turn;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    return false;
+  }
+}
+
+async function getPlayerColor(data) {
+  try {
+    const token = await getCsrfToken();
+
+    const response = await axios.post(
+      `${endpoints.getPlayerColor}`,
+
+      data,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        withCredentials: true,
+      }
+    );
+
+    if (response.data && response.data.playerColor) {
+      if (response.data.playerColor === "black") {
+        return true;
+      } else if (response.data.playerColor === "white") {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    return false;
+  }
+}
+
+export { initBoard, isItMyTurn, updateMatch, getFEN, getTurn, getPlayerColor };
