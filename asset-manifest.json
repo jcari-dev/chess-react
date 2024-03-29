@@ -1,28 +1,28 @@
 {
   "files": {
-    "main.css": "/jcari-dev/chess-react/static/css/main.e6c13ad2.css",
-    "main.js": "/jcari-dev/chess-react/static/js/main.9485aac4.js",
-    "static/js/453.8411124a.chunk.js": "/jcari-dev/chess-react/static/js/453.8411124a.chunk.js",
-    "static/media/knight-chess.webp": "/jcari-dev/chess-react/static/media/knight-chess.2680b11f7b134d826080.webp",
-    "static/media/b_rook.svg": "/jcari-dev/chess-react/static/media/b_rook.fdc575582c2cbe2ec82093702945226f.svg",
-    "static/media/b_knight.svg": "/jcari-dev/chess-react/static/media/b_knight.7930be9e07b51bc0e069b1d77e31261a.svg",
-    "static/media/b_king.svg": "/jcari-dev/chess-react/static/media/b_king.6c8cc8fabe5215cc854dec67ee7781fd.svg",
-    "static/media/b_queen.svg": "/jcari-dev/chess-react/static/media/b_queen.cf388bf415c0d33ec16f23593b8d0d91.svg",
-    "static/media/w_knight.svg": "/jcari-dev/chess-react/static/media/w_knight.d47944d2cee4f8c707d1907706c142fa.svg",
-    "static/media/b_bishop.svg": "/jcari-dev/chess-react/static/media/b_bishop.04932f63ef10dcdee115b649286230f5.svg",
-    "static/media/w_bishop.svg": "/jcari-dev/chess-react/static/media/w_bishop.aa411d5809c6380713b4312d55aafc53.svg",
-    "static/media/w_rook.svg": "/jcari-dev/chess-react/static/media/w_rook.9e48b84f189eea24339f8a679e7a664f.svg",
-    "static/media/w_queen.svg": "/jcari-dev/chess-react/static/media/w_queen.7a1aecff0f22ff68c43f9b7f8a81d0b4.svg",
-    "index.html": "/jcari-dev/chess-react/index.html",
-    "static/media/b_pawn.svg": "/jcari-dev/chess-react/static/media/b_pawn.be5d44ca5ee868885d216188996e3a00.svg",
-    "static/media/w_pawn.svg": "/jcari-dev/chess-react/static/media/w_pawn.50273cc6d86861932d0a01c38274009a.svg",
-    "static/media/w_king.svg": "/jcari-dev/chess-react/static/media/w_king.5d58f1999749c1b5ef5bc1699c38b2f7.svg",
-    "main.e6c13ad2.css.map": "/jcari-dev/chess-react/static/css/main.e6c13ad2.css.map",
-    "main.9485aac4.js.map": "/jcari-dev/chess-react/static/js/main.9485aac4.js.map",
-    "453.8411124a.chunk.js.map": "/jcari-dev/chess-react/static/js/453.8411124a.chunk.js.map"
+    "main.css": "/chess-react/static/css/main.e6c13ad2.css",
+    "main.js": "/chess-react/static/js/main.8ce804d5.js",
+    "static/js/453.8411124a.chunk.js": "/chess-react/static/js/453.8411124a.chunk.js",
+    "static/media/knight-chess.webp": "/chess-react/static/media/knight-chess.2680b11f7b134d826080.webp",
+    "static/media/b_rook.svg": "/chess-react/static/media/b_rook.fdc575582c2cbe2ec82093702945226f.svg",
+    "static/media/b_knight.svg": "/chess-react/static/media/b_knight.7930be9e07b51bc0e069b1d77e31261a.svg",
+    "static/media/b_king.svg": "/chess-react/static/media/b_king.6c8cc8fabe5215cc854dec67ee7781fd.svg",
+    "static/media/b_queen.svg": "/chess-react/static/media/b_queen.cf388bf415c0d33ec16f23593b8d0d91.svg",
+    "static/media/w_knight.svg": "/chess-react/static/media/w_knight.d47944d2cee4f8c707d1907706c142fa.svg",
+    "static/media/b_bishop.svg": "/chess-react/static/media/b_bishop.04932f63ef10dcdee115b649286230f5.svg",
+    "static/media/w_bishop.svg": "/chess-react/static/media/w_bishop.aa411d5809c6380713b4312d55aafc53.svg",
+    "static/media/w_rook.svg": "/chess-react/static/media/w_rook.9e48b84f189eea24339f8a679e7a664f.svg",
+    "static/media/w_queen.svg": "/chess-react/static/media/w_queen.7a1aecff0f22ff68c43f9b7f8a81d0b4.svg",
+    "static/media/b_pawn.svg": "/chess-react/static/media/b_pawn.be5d44ca5ee868885d216188996e3a00.svg",
+    "static/media/w_pawn.svg": "/chess-react/static/media/w_pawn.50273cc6d86861932d0a01c38274009a.svg",
+    "index.html": "/chess-react/index.html",
+    "static/media/w_king.svg": "/chess-react/static/media/w_king.5d58f1999749c1b5ef5bc1699c38b2f7.svg",
+    "main.e6c13ad2.css.map": "/chess-react/static/css/main.e6c13ad2.css.map",
+    "main.8ce804d5.js.map": "/chess-react/static/js/main.8ce804d5.js.map",
+    "453.8411124a.chunk.js.map": "/chess-react/static/js/453.8411124a.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.e6c13ad2.css",
-    "static/js/main.9485aac4.js"
+    "static/js/main.8ce804d5.js"
   ]
 }
