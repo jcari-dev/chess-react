@@ -10,7 +10,6 @@ import {
 } from "../../../utils/Moves";
 import {
   initBoard,
-  updateMatch,
   isItMyTurn,
   getTurn,
   getPlayerColor,
@@ -77,6 +76,7 @@ function Board({ roomId, userId, otherPlayerId }) {
     };
 
     // Check if the move matches one of the en passant conditions to determine the target square
+
     if (
       conditions[startRank] &&
       ((startRank === "2" && endRank === "4") ||
@@ -97,8 +97,6 @@ function Board({ roomId, userId, otherPlayerId }) {
         leftRightSquares.squareToTheRight
       );
 
-      // console.log(enemyPawnAdjacent);
-
       if (enemyPawnAdjacent) {
         const keys = Object.keys(enemyPawnAdjacent);
         // keys[0] and keys[1] should stand for enemyPawnAdjacent.squareToTheLeft and enemyPawnAdjacent.squareToTheRight
@@ -111,11 +109,20 @@ function Board({ roomId, userId, otherPlayerId }) {
     return false;
   }
 
-  function handleHalfmoveClock(reset = false) {
-    if (reset) {
+  function handleHalfmoveClock(data) {
+    const attacker = data.attacker
+    const captured = data.captured
+    const capturedOcurred = listenForCaptures({attacker: attacker, captured: captured})
+    
+    console.log(attacker, captureOccurred, halfmoveClock)
+
+    if (attacker.includes("pawn") || capturedOcurred) {
       setHalfmoveClock(0);
+      return 0
     } else {
       setHalfmoveClock(halfmoveClock + 1);
+      console.log("bro?")
+      return halfmoveClock + 1
     }
   }
 
@@ -150,7 +157,6 @@ function Board({ roomId, userId, otherPlayerId }) {
   }
 
   function clearHighlights() {
-    // console.log(boardData);
     const updatedBoard = { ...boardData }; // Create a shallow copy of the board
     Object.keys(updatedBoard).forEach(function (position) {
       if (updatedBoard[position].highlight) {
@@ -162,9 +168,11 @@ function Board({ roomId, userId, otherPlayerId }) {
 
   function listenForCaptures(data) {
     if (data.captured && data.attacker) {
-      const colorOfPieceMoving = data.captured[0]; // this is expected to be either b or w as well
-      const colorOfPieceCaptured = data.attacker[0]; // this is expected to be either b or w as well
-
+      const colorOfPieceMoving = data.attacker[0]; // this is expected to be either b or w as well
+      const colorOfPieceCaptured = data.captured[0]; // this is expected to be either b or w as well
+      console.log(data.captured)
+      console.log(colorOfPieceMoving, "This piece is moving")
+      console.log(colorOfPieceCaptured, "This piece was captured.")
       // console.log(colorOfPieceCaptured, colorOfPieceMoving);
       if (colorOfPieceMoving !== colorOfPieceCaptured) {
         setCaptureOccurred(true);
@@ -191,21 +199,21 @@ function Board({ roomId, userId, otherPlayerId }) {
           setBoardData(result.boardData);
           clearInterval(intervalId); // Stop polling
           setTurnCount(result.turnCount);
+          setHalfmoveClock(result.halfmoveClock)
         } else {
           setIsMyTurn(false);
           console.log("Not my turn yet, polling...");
         }
       }, 1000); // Poll every second
 
-      // Set a timeout for how long to poll (e.g., 5 minutes)
       const timeoutId = setTimeout(() => {
-        clearInterval(intervalId); // Stop polling after 5 minutes
+        clearInterval(intervalId);
         console.log("Polling timeout reached. Stopping polling.");
-      }, 3000000); // 30000 milliseconds = 0.5 minutes
+      }, 3000000);
 
       return () => {
-        clearInterval(intervalId); // Cleanup interval on component unmount or deps change
-        clearTimeout(timeoutId); // Cleanup timeout as well
+        clearInterval(intervalId);
+        clearTimeout(timeoutId);
       };
     };
 
@@ -213,7 +221,7 @@ function Board({ roomId, userId, otherPlayerId }) {
     if (!isMyTurn) {
       return pollForTurn();
     }
-  }, [isMyTurn, roomId, userId]); // Re-run effect if these dependencies change
+  }, [isMyTurn, roomId, userId]);
 
   async function handleMove(data) {
     // Move is only needed if the square isnt empty.
@@ -261,6 +269,7 @@ function Board({ roomId, userId, otherPlayerId }) {
               " to ",
               data.notation
             );
+
             clearHighlights();
 
             const prev = boardData; // This would represent your current state before the update
@@ -278,6 +287,10 @@ function Board({ roomId, userId, otherPlayerId }) {
               setTurnCount(turn);
             }
 
+            const validClock = handleHalfmoveClock({attacker: pieceToMove, captured: data.piece})
+            setHalfmoveClock(validClock)
+            console.log(validClock, "prior to v")
+
             const validMove = await isItAValidMove({
               board: boardDataPrePosting,
               pieceMoving:
@@ -285,7 +298,7 @@ function Board({ roomId, userId, otherPlayerId }) {
                 pieceToMove.slice(1),
               target: data.notation,
               turnCount: turn,
-              halfmoveClock: halfmoveClock,
+              halfmoveClock: validClock,
               castlingRights: castlingRights,
               enPassant: enPassant,
               roomId: roomId,
@@ -298,7 +311,9 @@ function Board({ roomId, userId, otherPlayerId }) {
             setFirstClick(null);
             console.log("Piece should have been moved.");
             setIsMyTurn(false);
+
           } else {
+            
             console.log("Illegal move.");
             setFirstClick(null);
             setPieceToMove("");

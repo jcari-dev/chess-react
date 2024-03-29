@@ -29,10 +29,15 @@ function Room() {
 
       // Start polling
       const intervalId = setInterval(async () => {
-        const response = await axios.get(`http://127.0.0.1:8000/api/check-room/${roomId}?userId=${userId}`);
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/check-room/${roomId}?userId=${userId}`
+        );
         const { playerA, playerB, hasPlayerA, hasPlayerB } = response.data;
 
-        if ((userId === playerA && hasPlayerB) || (userId === playerB && hasPlayerA)) {
+        if (
+          (userId === playerA && hasPlayerB) ||
+          (userId === playerB && hasPlayerA)
+        ) {
           clearInterval(intervalId); // Stop polling
           setIsLoading(false);
           setOtherPlayerId(userId === playerA ? playerB : playerA); // Set other player ID
@@ -44,13 +49,18 @@ function Room() {
     };
 
     joinAndCheckRoomStatus();
-  }, [userId, roomId]); 
+  }, [userId, roomId]);
 
   return (
     <div>
       {isLoading ? (
         <Center height="100vh">
-          <Box textAlign="center" padding="20px" boxShadow="lg" borderRadius="lg">
+          <Box
+            textAlign="center"
+            padding="20px"
+            boxShadow="lg"
+            borderRadius="lg"
+          >
             <Spinner size="xl" marginBottom="4" />
             <Text fontSize="lg">Waiting for all players to join...</Text>
           </Box>
@@ -60,10 +70,14 @@ function Room() {
           <p>Room ID: {roomId}</p>
           <p>Your ID: {userId}</p>
           <p>Other Player ID: {otherPlayerId}</p>
-          <br/>
-          <br/>
-          <br/>
-          <ChessBoard userId={userId} otherPlayerId={otherPlayerId} roomId={roomId}/>
+          <br />
+          <br />
+          <br />
+          <ChessBoard
+            userId={userId}
+            otherPlayerId={otherPlayerId}
+            roomId={roomId}
+          />
         </div>
       )}
     </div>

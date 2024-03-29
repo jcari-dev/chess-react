@@ -34,17 +34,17 @@ function Square({ piece, color, notation, highlight }) {
   const border = highlight ? '2px solid teal' : ''
 
   function status(data){
-    
 
     if(!data.piece){
         data.piece = "empty"
     }
-    // console.log(data.piece, data.notation)
+
   }
 
   
   return (
     <div
+      title={notation}
       style={{
         width: "64px",
         height: "64px",

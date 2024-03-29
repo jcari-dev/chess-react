@@ -126,7 +126,6 @@ async function isItMyTurn(roomId, userId) {
     console.log(response.data);
 
     if (response.data && response.data.myTurn) {
-
       return response.data;
     } else {
       return false;
@@ -214,10 +213,10 @@ async function getPlayerColor(data) {
     );
 
     if (response.data && response.data.playerColor) {
-      if(response.data.playerColor === "black"){
-        return true
-      } else if(response.data.playerColor === "white"){
-        return false
+      if (response.data.playerColor === "black") {
+        return true;
+      } else if (response.data.playerColor === "white") {
+        return false;
       }
     } else {
       return false;
