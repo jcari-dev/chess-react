@@ -5,6 +5,7 @@ import axios from "axios";
 import { JoinRoom } from "../../utils/Room";
 import ChessBoard from "../../components/main/board/Board";
 import endpoints from "../../utils/Endpoints";
+import { Helmet } from 'react-helmet';
 
 function Room() {
   const { roomId } = useParams();
@@ -55,6 +56,8 @@ function Room() {
 
   return (
     <div>
+      <Helmet>
+      <meta name="description" content={`Let's play together, join my room now!`} />
       {isLoading ? (
         <Center height="100vh">
           <Box
@@ -85,6 +88,7 @@ function Room() {
           </Box>
         </div>
       )}
+      </Helmet>
     </div>
   );
 }
