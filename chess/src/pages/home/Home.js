@@ -23,7 +23,7 @@ function PlayCard() {
   async function generateRoomUrl() {
     setIsLoading(true);
     const roomId = await CreateRoom();
-    setUniqueUrl(`http://localhost:3000/room/${roomId}`);
+    setUniqueUrl(`${window.location.origin}/room/${roomId}`);
     setShowUrl(true);
     setIsLoading(false);
   }
