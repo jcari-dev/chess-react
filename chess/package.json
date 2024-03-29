@@ -26,9 +26,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "predeploy": "npm run build",
     "deploy": "gh-pages -d build -b release"
   },
-  "homepage": "https://github.com/jcari-dev/chess-react/",
+  "homepage": "https://jcari-dev.github.io/chess-react",
   "eslintConfig": {
     "extends": [
       "react-app",
