@@ -9,6 +9,8 @@ import {
   Text,
   Image,
   Spinner,
+  Link,
+  useToast,
 } from "@chakra-ui/react";
 import Cover from "../../data/pages/home/knight-chess.webp";
 import { CreateRoom } from "../../utils/Room";
@@ -28,6 +30,31 @@ function PlayCard() {
     setIsLoading(false);
   }
 
+  const toast = useToast();
+
+  const showToast = () => {
+    toast({
+      title: "Coming up soon!",
+      description: (
+        <>
+          Follow development on{" "}
+          <a
+            href="https://github.com/jcari-dev/chess-react/issues?q=is%3Aissue+is%3Aopen+label%3ACPU"
+            style={{ color: "blue.500" }}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub! 👀
+          </a>
+        </>
+      ),
+      status: "info",
+      duration: 9000,
+      isClosable: true,
+      position: "top",
+    });
+  };
+
   return (
     <Flex
       width="100vw"
@@ -39,7 +66,7 @@ function PlayCard() {
       <Box w="500px" p={4} boxShadow="md" borderRadius="md" bg="white">
         <VStack spacing={4}>
           <Text fontSize="3xl" fontWeight="bold">
-            Select game mode:
+            Select Game Mode:
           </Text>
           <Image
             src={Cover}
@@ -48,7 +75,7 @@ function PlayCard() {
             alt="Chess"
             transform="scaleX(-1)"
           />
-          <Button colorScheme="teal" onClick={() => setShowUrl(false)}>
+          <Button colorScheme="teal" onClick={showToast}>
             Play vs CPU
           </Button>
           <Button
@@ -78,6 +105,14 @@ function PlayCard() {
               )}
             </VStack>
           )}
+              <Box as="footer" width="full" padding="4" textAlign="center">
+      <Text>
+        Made with <span role="img" aria-label="heart">❤️</span> by 
+        <Link href="https://github.com/jcari-dev" isExternal color="teal.500" marginLeft="1">
+          Jorge Caridad
+        </Link>
+      </Text>
+    </Box>
         </VStack>
       </Box>
     </Flex>
