@@ -130,26 +130,31 @@ function Board({ roomId, userId, otherPlayerId }) {
     }
   }
 
-  function handleCastling(board) {
-    if (board["e1"].piece !== "w_king") {
-      setCastlingRights(castlingRights.replace("K", "").replace("Q", ""));
-    } else if (board["h1"].piece !== "w_rook") {
-      setCastlingRights(castlingRights.replace("K", ""));
-    } else if (board["a1"].piece !== "w_rook") {
-      setCastlingRights(castlingRights.replace("Q", ""));
-    } else if (board["e8"].piece !== "b_king") {
-      setCastlingRights(castlingRights.replace("k", "").replace("q", ""));
-    } else if (board["h8"].piece !== "b_rook") {
-      setCastlingRights(castlingRights.replace("k", ""));
-    } else if (board["a8"].piece !== "b_rook") {
-      setCastlingRights(castlingRights.replace("q", ""));
+  function handleCastling(board, castlingRights) {
+    let newCastlingRights = castlingRights;
+  
+    if (board["e1"]?.piece !== "w_king") {
+      newCastlingRights = newCastlingRights.replace("K", "").replace("Q", "");
+    } else if (board["h1"]?.piece !== "w_rook") {
+      newCastlingRights = newCastlingRights.replace("K", "");
+    } else if (board["a1"]?.piece !== "w_rook") {
+      newCastlingRights = newCastlingRights.replace("Q", "");
+    } else if (board["e8"]?.piece !== "b_king") {
+      newCastlingRights = newCastlingRights.replace("k", "").replace("q", "");
+    } else if (board["h8"]?.piece !== "b_rook") {
+      newCastlingRights = newCastlingRights.replace("k", "");
+    } else if (board["a8"]?.piece !== "b_rook") {
+      newCastlingRights = newCastlingRights.replace("q", "");
     }
-
-    if (castlingRights === "") {
-      setCastlingRights("-");
+  
+    if (newCastlingRights === "") {
+      newCastlingRights = "-";
     }
+    
+    setCastlingRights(newCastlingRights)
+    return newCastlingRights;
   }
-
+  
   function updateHighlights(positions) {
     const updatedBoard = { ...boardData }; // Shallow copy
     positions.forEach(function (position) {
@@ -301,6 +306,8 @@ function Board({ roomId, userId, otherPlayerId }) {
             setHalfmoveClock(validClock);
             console.log(validClock, "prior to v");
 
+            const newCastlingRights = handleCastling(boardDataPrePosting, castlingRights)
+
             const validMove = await isItAValidMove({
               board: boardDataPrePosting,
               pieceMoving:
@@ -309,7 +316,7 @@ function Board({ roomId, userId, otherPlayerId }) {
               target: data.notation,
               turnCount: turn,
               halfmoveClock: validClock,
-              castlingRights: castlingRights,
+              castlingRights: newCastlingRights,
               enPassant: enPassant,
               roomId: roomId,
             });
@@ -321,6 +328,7 @@ function Board({ roomId, userId, otherPlayerId }) {
             setFirstClick(null);
             console.log("Piece should have been moved.");
             setIsMyTurn(false);
+            
           } else {
             console.log("Illegal move.");
             setFirstClick(null);
