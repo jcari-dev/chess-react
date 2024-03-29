@@ -11,7 +11,6 @@ import { ReactComponent as WKnight } from "../../../data/pieces/w_knight.svg";
 import { ReactComponent as WRook } from "../../../data/pieces/w_rook.svg";
 import { ReactComponent as WPawn } from "../../../data/pieces/w_pawn.svg";
 
-
 const pieceToSVG = {
   b_king: BKing,
   b_queen: BQueen,
@@ -28,33 +27,31 @@ const pieceToSVG = {
 };
 
 function Square({ piece, color, notation, highlight }) {
-
   const PieceSVG = piece ? pieceToSVG[piece] : null;
 
-  const border = highlight ? '2px solid teal' : ''
+  const border = highlight ? "2px solid teal" : "";
 
-  function status(data){
-
-    if(!data.piece){
-        data.piece = "empty"
+  function status(data) {
+    if (!data.piece) {
+      data.piece = "empty";
     }
-
   }
 
-  
   return (
     <div
-      title={notation}
+      title={notation.toUpperCase()}
       style={{
         width: "64px",
         height: "64px",
         backgroundColor: color,
-        justifyContent: 'center',
-        alignItems: 'center',
-        display: 'flex',
-        border: border
+        justifyContent: "center",
+        alignItems: "center",
+        display: "flex",
+        border: border,
       }}
-      onClick={() =>{status({piece: piece, notation: notation})}}
+      onClick={() => {
+        status({ piece: piece, notation: notation });
+      }}
     >
       {PieceSVG && <PieceSVG />}
     </div>

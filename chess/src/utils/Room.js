@@ -1,19 +1,20 @@
 import axios from "axios";
 import { getCsrfToken } from "./Auth";
 
+import endpoints from "./Endpoints";
 
 async function CreateRoom() {
   try {
     const data = {
-        testing: "Hi"
-    }
+      testing: "Hi",
+    };
     const token = await getCsrfToken();
     const response = await axios.post(
-        "http://127.0.0.1:8000/api/create-room/",
-      
-        data,
-      
-        {
+      `${endpoints.createRoom}`,
+
+      data,
+
+      {
         headers: {
           "Content-Type": "application/json",
           "X-CSRFToken": token,
@@ -22,7 +23,7 @@ async function CreateRoom() {
       }
     );
     if (response.data && response.data.roomId) {
-        return response.data.roomId
+      return response.data.roomId;
     } else {
       return false;
     }
@@ -32,35 +33,33 @@ async function CreateRoom() {
   }
 }
 
-
 async function JoinRoom(userId, roomId) {
-    try {
+  try {
     const data = { userId: userId, roomId: roomId };
 
-      const token = await getCsrfToken();
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/join-room/",
+    const token = await getCsrfToken();
+    const response = await axios.post(
+      `${endpoints.joinRoom}`,
 
-        
-          data,
-        
-          {
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": token,
-          },
-          withCredentials: true,
-        }
-      );
-      if (response.data && response.data.roomId) {
-          return response.data.roomId
-      } else {
-        return false;
+      data,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        withCredentials: true,
       }
-    } catch (error) {
-      console.error("Error:", error);
+    );
+    if (response.data && response.data.roomId) {
+      return response.data.roomId;
+    } else {
       return false;
     }
+  } catch (error) {
+    console.error("Error:", error);
+    return false;
   }
-  
+}
+
 export { CreateRoom, JoinRoom };

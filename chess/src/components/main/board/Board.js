@@ -3,12 +3,21 @@ import Square from "./Square";
 import React, { useState, useEffect } from "react";
 import Turn from "./Turn";
 
-import { getValidMoves, getLeftAndRightSquares } from "../../../utils/Moves";
-import { initBoard, updateMatch, isItMyTurn } from "../../../utils/BoardUtils";
+import {
+  getValidMoves,
+  getLeftAndRightSquares,
+  isItAValidMove,
+} from "../../../utils/Moves";
+import {
+  initBoard,
+  isItMyTurn,
+  getTurn,
+  getPlayerColor,
+} from "../../../utils/BoardUtils";
 import { adjacentEnemyPawn } from "../../../utils/Logic";
 
 function Board({ roomId, userId, otherPlayerId }) {
-  const [turnCount, setTurnCount] = useState(0);
+  const [turnCount, setTurnCount] = useState(1);
   const [firstClick, setFirstClick] = useState(null);
   const [turnOrder, setTurnOrder] = useState(false);
   const [captureOccurred, setCaptureOccurred] = useState(false);
@@ -19,10 +28,41 @@ function Board({ roomId, userId, otherPlayerId }) {
   const [enPassant, setEnPassant] = useState("-");
   const [validMoves, setValidMoves] = useState([]);
   const [boardData, setBoardData] = useState(initBoard);
+  const [isMyTurn, setIsMyTurn] = useState(false);
+  const [isPlayerBlack, setIsPlayerBlack] = useState(false);
 
-  function handleTurn() {
+  useEffect(() => {
+    // Again this is only meant to run once.
+    const fetchTurn = async () => {
+      try {
+        const turnOnDB = await getTurn({ roomId });
+        setTurnCount(turnOnDB); // Update state with fetched data
+        const playerColor = await getPlayerColor({
+          roomId: roomId,
+          userId: userId,
+        });
+        setIsPlayerBlack(playerColor);
+      } catch (error) {
+        console.error("Failed to fetch turn:", error);
+        // Handle error, maybe set turnCount to a safe value or show error message
+      }
+    };
+
+    fetchTurn();
+  }, []);
+
+  function handleTurn(pieceColor) {
+    console.log("This is turn handling", pieceColor);
+
+    let turn = turnCount;
+
     setTurnOrder((prevState) => !prevState);
-    setTurnCount(turnCount + 1);
+    if (pieceColor[0] === "b") {
+      turn = turnCount + 1;
+      setTurnCount(turn);
+    }
+
+    return turn;
   }
 
   function handleEnPassant(board, movingFrom, movedTo) {
@@ -37,6 +77,7 @@ function Board({ roomId, userId, otherPlayerId }) {
     };
 
     // Check if the move matches one of the en passant conditions to determine the target square
+
     if (
       conditions[startRank] &&
       ((startRank === "2" && endRank === "4") ||
@@ -50,16 +91,12 @@ function Board({ roomId, userId, otherPlayerId }) {
       console.log("This is movedTo: ", movedTo);
       const leftRightSquares = getLeftAndRightSquares(movedTo);
 
-      // console.log(leftRightSquares);
-
       const enemyPawnAdjacent = adjacentEnemyPawn(
         board,
         movingFrom,
         leftRightSquares.squareToTheLeft,
         leftRightSquares.squareToTheRight
       );
-
-      // console.log(enemyPawnAdjacent);
 
       if (enemyPawnAdjacent) {
         const keys = Object.keys(enemyPawnAdjacent);
@@ -73,44 +110,25 @@ function Board({ roomId, userId, otherPlayerId }) {
     return false;
   }
 
-  function handleHalfmoveClock(reset = false) {
-    if (reset) {
+  function handleHalfmoveClock(data) {
+    const attacker = data.attacker;
+    const captured = data.captured;
+    const capturedOcurred = listenForCaptures({
+      attacker: attacker,
+      captured: captured,
+    });
+
+    console.log(attacker, captureOccurred, halfmoveClock);
+
+    if (attacker.includes("pawn") || capturedOcurred) {
       setHalfmoveClock(0);
+      return 0;
     } else {
       setHalfmoveClock(halfmoveClock + 1);
+      console.log("bro?");
+      return halfmoveClock + 1;
     }
   }
-
-  useEffect(() => {
-    // Async function to send the update
-    const sendUpdate = async () => {
-      await updateMatch({
-        board: boardData,
-        pieceMoving: pieceToMove,
-        target: notation,
-        turnCount: turnCount,
-        halfmoveClock: halfmoveClock,
-        castlingRights: castlingRights,
-        enPassant: enPassant,
-        roomId: roomId,
-      });
-    };
-
-    if (notation) {
-      sendUpdate();
-    }
-  }, [turnCount]);
-
-  useEffect(() => {
-    // Async function to send the update
-
-    console.log(firstClick, notation, pieceToMove);
-    setBoardData((prev) => ({
-      ...prev,
-      [firstClick]: { ...prev[firstClick], piece: "" },
-      [notation]: { ...prev[notation], piece: pieceToMove },
-    }));
-  }, [notation]);
 
   function handleCastling(board) {
     if (board["e1"].piece !== "w_king") {
@@ -133,7 +151,7 @@ function Board({ roomId, userId, otherPlayerId }) {
   }
 
   function updateHighlights(positions) {
-    const updatedBoard = { ...boardData }; // Create a shallow copy of the board
+    const updatedBoard = { ...boardData }; // Shallow copy
     positions.forEach(function (position) {
       if (updatedBoard[position]) {
         updatedBoard[position].highlight = true;
@@ -143,8 +161,7 @@ function Board({ roomId, userId, otherPlayerId }) {
   }
 
   function clearHighlights() {
-    // console.log(boardData);
-    const updatedBoard = { ...boardData }; // Create a shallow copy of the board
+    const updatedBoard = { ...boardData }; // Shallow copy
     Object.keys(updatedBoard).forEach(function (position) {
       if (updatedBoard[position].highlight) {
         updatedBoard[position].highlight = false;
@@ -155,10 +172,12 @@ function Board({ roomId, userId, otherPlayerId }) {
 
   function listenForCaptures(data) {
     if (data.captured && data.attacker) {
-      const colorOfPieceMoving = data.captured[0]; // this is expected to be either b or w as well
-      const colorOfPieceCaptured = data.attacker[0]; // this is expected to be either b or w as well
+      const colorOfPieceMoving = data.attacker[0]; // this is expected to be either b or w as well
+      const colorOfPieceCaptured = data.captured[0]; // this is expected to be either b or w as well
+      console.log(data.captured);
+      console.log(colorOfPieceMoving, "This piece is moving");
+      console.log(colorOfPieceCaptured, "This piece was captured.");
 
-      // console.log(colorOfPieceCaptured, colorOfPieceMoving);
       if (colorOfPieceMoving !== colorOfPieceCaptured) {
         setCaptureOccurred(true);
         return true;
@@ -170,37 +189,71 @@ function Board({ roomId, userId, otherPlayerId }) {
     return false;
   }
 
+  useEffect(() => {
+    console.log(boardData);
+    // TODO Why is this being used? It has something to do with the board state
+  }, [boardData]);
+
+  useEffect(() => {
+    // Define the polling logic within the effect
+    const pollForTurn = () => {
+      const intervalId = setInterval(async () => {
+        const result = await isItMyTurn(roomId, userId);
+
+        if (result && result.myTurn && result.boardData) {
+          setIsMyTurn(true);
+          setBoardData(result.boardData);
+          clearInterval(intervalId); // Stop polling
+          setTurnCount(result.turnCount);
+          setHalfmoveClock(result.halfmoveClock);
+        } else {
+          setIsMyTurn(false);
+          console.log("Not my turn yet, polling...");
+        }
+      }, 1000);
+
+      const timeoutId = setTimeout(() => {
+        clearInterval(intervalId);
+        console.log("Polling timeout reached. Stopping polling.");
+      }, 3000000); // Basically 5 minutes
+
+      return () => {
+        clearInterval(intervalId);
+        clearTimeout(timeoutId);
+      };
+    };
+
+    // Start polling if it's not yet the user's turn
+    if (!isMyTurn) {
+      return pollForTurn();
+    }
+  }, [isMyTurn, roomId, userId]);
+
   async function handleMove(data) {
     // Move is only needed if the square isnt empty.
+    // Comment is prob outdated but this should still hold true to some degree
 
-    // setNotation(data.notation)
-    console.log(data.notation);
+    const myTurn = await isItMyTurn(roomId, userId);
 
-    const notation = data.notation;
+    setIsMyTurn(myTurn);
 
-    const piece = data.piece;
-
-    if (piece || firstClick) {
-      // console.log(firstClick, validatePieceSelection({ piece: piece, turn: turnOrder }))
-      const myTurn = await isItMyTurn(roomId, userId);
-      if (
-        firstClick ||
-        myTurn
-      ) {
+    if (myTurn.myTurn) {
+      if (data.piece && myTurn.color !== data.piece[0] && firstClick === null) {
+        console.log("Not your piece.");
+      } else {
         if (firstClick === null) {
-          // This is basically when you click something.
-          console.log(
-            notation,
-            "This is notation, which is technically target as well."
-          );
-          setFirstClick(notation);
-          console.log(piece, "was selected");
-          setPieceToMove(piece);
-          setNotation(notation);
+          setPieceToMove(data.piece);
+
+          setNotation(data.notation);
+
+          setFirstClick(data.notation);
+
+          console.log(data.piece, data.notation);
+
           const validMoves = await getValidMoves({
             board: boardData,
-            pieceMoving: piece,
-            target: notation,
+            pieceMoving: data.piece,
+            target: data.notation,
             turnCount: turnCount,
             halfmoveClock: halfmoveClock,
             castlingRights: castlingRights,
@@ -209,86 +262,83 @@ function Board({ roomId, userId, otherPlayerId }) {
 
           setValidMoves(validMoves);
 
-          if (validMoves) {
-            updateHighlights(validMoves);
-          }
+          console.log(validMoves, "These are the valid moves.");
+
+          updateHighlights(validMoves);
         } else {
-          clearHighlights();
+          if (validMoves.includes(data.notation)) {
+            console.log(firstClick);
+            console.log(
+              "I want to move ",
+              pieceToMove,
+              " on ",
+              firstClick,
+              " to ",
+              data.notation
+            );
 
-          // Move the piece to the new square
-          setPieceToMove(boardData[firstClick].piece);
+            clearHighlights();
 
-          if (validMoves.includes(notation)) {
-            console.log(pieceToMove, "moved into", notation);
+            const prev = boardData; // Grabbing the board before posting it
 
-            console.log("Board pre, change: ", boardData);
+            const boardDataPrePosting = {
+              ...prev,
+              [firstClick]: { ...prev[firstClick], piece: "" },
+              [data.notation]: { ...prev[data.notation], piece: pieceToMove },
+            };
 
-            console.log("Board post, change: ", boardData);
+            let turn = turnCount;
 
-            // Turn is over at this point and things have been moved
-
-            const possiblePieceBeingCaptured = boardData[notation].piece;
-
-            if (possiblePieceBeingCaptured) {
-              console.log(possiblePieceBeingCaptured, "captured");
-            }
-            if (pieceToMove.includes("pawn")) {
-              handleEnPassant(boardData, firstClick, notation);
-            }
-
-            handleCastling(boardData);
-
-            handleTurn();
-
-            if (
-              pieceToMove.includes("pawn") ||
-              listenForCaptures({
-                captured: possiblePieceBeingCaptured,
-                attacker: pieceToMove,
-              })
-            ) {
-              console.log("Halfmove clock resets.");
-              const reset = true;
-              handleHalfmoveClock(reset);
-            } else {
-              handleHalfmoveClock();
+            if (pieceToMove[0] === "b") {
+              turn = turnCount + 1;
+              setTurnCount(turn);
             }
 
-            setFirstClick(null); // Reset the first click
+            const validClock = handleHalfmoveClock({
+              attacker: pieceToMove,
+              captured: data.piece,
+            });
+            setHalfmoveClock(validClock);
+            console.log(validClock, "prior to v");
 
-            const matchUpdated = await updateMatch({
-              board: boardData,
-              pieceMoving: pieceToMove,
-              target: notation,
-              turnCount: turnCount,
-              halfmoveClock: halfmoveClock,
+            const validMove = await isItAValidMove({
+              board: boardDataPrePosting,
+              pieceMoving:
+                (pieceToMove.charAt(0) === "w" ? "b" : "w") +
+                pieceToMove.slice(1),
+              target: data.notation,
+              turnCount: turn,
+              halfmoveClock: validClock,
               castlingRights: castlingRights,
               enPassant: enPassant,
               roomId: roomId,
             });
 
-            console.log(boardData, "before updating?");
+            console.log(boardDataPrePosting);
 
-            if (matchUpdated) {
-              console.log("Match updated nicely.");
-              console.log(matchUpdated);
-              setBoardData(matchUpdated);
-            }
-          } else {
+            setBoardData(boardDataPrePosting);
+
             setFirstClick(null);
-            setNotation("");
+            console.log("Piece should have been moved.");
+            setIsMyTurn(false);
+          } else {
             console.log("Illegal move.");
+            setFirstClick(null);
+            setPieceToMove("");
+            setNotation("");
+            clearHighlights();
           }
         }
-      } else {
-        console.log("Not your turn.");
       }
     }
   }
 
+  const boardEntries = Object.entries(boardData);
+  const orderedEntries = isPlayerBlack ? boardEntries.reverse() : boardEntries;
+
   return (
     <div>
-      <Turn status={turnOrder} turnNo={turnCount} />
+      <Turn myTurn={isMyTurn} />
       <div
         style={{
           display: "flex",
@@ -303,21 +353,19 @@ function Board({ roomId, userId, otherPlayerId }) {
             gridTemplateColumns: "repeat(8, 1fr)",
           }}
         >
-          {Object.entries(boardData).map(
-            ([notation, { piece, color, highlight }]) => (
-              <div
-                key={notation}
-                onClick={() => handleMove({ notation: notation, piece: piece })}
-              >
-                <Square
-                  piece={piece}
-                  color={color}
-                  notation={notation}
-                  highlight={highlight}
-                />
-              </div>
-            )
-          )}
+          {orderedEntries.map(([notation, { piece, color, highlight }]) => (
+            <div
+              key={notation}
+              onClick={() => handleMove({ notation: notation, piece: piece })}
+            >
+              <Square
+                piece={piece}
+                color={color}
+                notation={notation}
+                highlight={highlight}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </div>

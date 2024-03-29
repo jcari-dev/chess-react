@@ -1,6 +1,8 @@
 import { getCsrfToken } from "./Auth";
 import axios from "axios";
 
+import endpoints from "./Endpoints";
+
 let initBoard = {
   a8: { piece: "b_rook", color: "coral", highlight: false },
   b8: { piece: "b_knight", color: "white", highlight: false },
@@ -73,7 +75,7 @@ async function updateMatch(data) {
     const token = await getCsrfToken();
 
     const response = await axios.post(
-      "http://127.0.0.1:8000/api/update-match/",
+      `${endpoints.updateMatch}`,
 
       data,
 
@@ -110,7 +112,7 @@ async function isItMyTurn(roomId, userId) {
     const token = await getCsrfToken();
 
     const response = await axios.post(
-      "http://127.0.0.1:8000/api/check-turn/",
+      `${endpoints.checkTurn}`,
 
       data,
 
@@ -141,7 +143,7 @@ async function getFEN(data) {
     const token = await getCsrfToken();
 
     const response = await axios.post(
-      "http://127.0.0.1:8000/api/get-fen/",
+      `${endpoints.getFen}`,
 
       data,
 
@@ -170,7 +172,7 @@ async function getTurn(data) {
     const token = await getCsrfToken();
 
     const response = await axios.post(
-      "http://127.0.0.1:8000/api/get-turn/",
+      `${endpoints.getTurn}`,
 
       data,
 
@@ -199,7 +201,7 @@ async function getPlayerColor(data) {
     const token = await getCsrfToken();
 
     const response = await axios.post(
-      "http://127.0.0.1:8000/api/get-player-color/",
+      `${endpoints.getPlayerColor}`,
 
       data,
 

@@ -1,12 +1,14 @@
 import axios from "axios";
 import { getCsrfToken } from "./Auth";
 
+import endpoints from "./Endpoints";
+
 async function getValidMoves(data) {
   // This function should take a square and a board.
   try {
     const token = await getCsrfToken();
     const response = await axios.post(
-      "http://127.0.0.1:8000/api/get-valid-moves/",
+      `${endpoints.getValidMoves}`,
 
       data,
 
@@ -80,7 +82,7 @@ async function isItAValidMove(data) {
   try {
     const token = await getCsrfToken();
     const response = await axios.post(
-      "http://127.0.0.1:8000/api/check-move-continuation/",
+      `${endpoints.checkMoveContinuation}`,
 
       data,
 

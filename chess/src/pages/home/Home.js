@@ -8,7 +8,7 @@ import {
   Flex,
   Text,
   Image,
-  Spinner, // Make sure to include Spinner in the import
+  Spinner,
 } from "@chakra-ui/react";
 import Cover from "../../data/pages/home/knight-chess.webp";
 import { CreateRoom } from "../../utils/Room";
@@ -16,16 +16,16 @@ import { CreateRoom } from "../../utils/Room";
 function PlayCard() {
   const [showUrl, setShowUrl] = useState(false);
   const [uniqueUrl, setUniqueUrl] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Loading state
+  const [isLoading, setIsLoading] = useState(false);
 
   const { hasCopied, onCopy } = useClipboard(uniqueUrl);
 
   async function generateRoomUrl() {
-    setIsLoading(true); // Start loading
+    setIsLoading(true);
     const roomId = await CreateRoom();
     setUniqueUrl(`http://localhost:3000/room/${roomId}`);
     setShowUrl(true);
-    setIsLoading(false); // End loading
+    setIsLoading(false);
   }
 
   return (
@@ -39,7 +39,7 @@ function PlayCard() {
       <Box w="500px" p={4} boxShadow="md" borderRadius="md" bg="white">
         <VStack spacing={4}>
           <Text fontSize="3xl" fontWeight="bold">
-            Chess Online
+            Select game mode:
           </Text>
           <Image
             src={Cover}
@@ -73,7 +73,7 @@ function PlayCard() {
                   <Button onClick={onCopy}>
                     {hasCopied ? "Copied" : "Copy URL"}
                   </Button>
-                <Text>Share the URL to play with your friend! :) </Text>
+                  <Text>Share the URL to play with your friend! :) </Text>
                 </>
               )}
             </VStack>

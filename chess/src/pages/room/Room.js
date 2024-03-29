@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Spinner, Box, Center, Text } from "@chakra-ui/react";
+import { Spinner, Box, Center, Text, Tag, HStack } from "@chakra-ui/react";
 import axios from "axios";
 import { JoinRoom } from "../../utils/Room";
-import ChessBoard from "../../components/main/board/Boardv2";
+import ChessBoard from "../../components/main/board/Board";
+import endpoints from "../../utils/Endpoints";
 
 function Room() {
   const { roomId } = useParams();
+  document.title = `Room ${roomId}`;
   const [userId, setUserId] = useState("");
   const [otherPlayerId, setOtherPlayerId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -30,7 +32,7 @@ function Room() {
       // Start polling
       const intervalId = setInterval(async () => {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/check-room/${roomId}?userId=${userId}`
+          `${endpoints.checkRoom}/${roomId}?userId=${userId}`
         );
         const { playerA, playerB, hasPlayerA, hasPlayerB } = response.data;
 
@@ -67,17 +69,20 @@ function Room() {
         </Center>
       ) : (
         <div>
-          <p>Room ID: {roomId}</p>
-          <p>Your ID: {userId}</p>
-          <p>Other Player ID: {otherPlayerId}</p>
-          <br />
-          <br />
-          <br />
           <ChessBoard
             userId={userId}
             otherPlayerId={otherPlayerId}
             roomId={roomId}
           />
+          <Box display="flex" justifyContent="center">
+            <HStack spacing={4}>
+              <Tag colorScheme="blue">Your ID: {userId}</Tag>
+
+              <Tag colorScheme="green">Room ID: {roomId}</Tag>
+
+              <Tag colorScheme="red">Opponent's ID: {otherPlayerId}</Tag>
+            </HStack>
+          </Box>
         </div>
       )}
     </div>
