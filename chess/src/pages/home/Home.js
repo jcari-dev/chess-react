@@ -15,6 +15,7 @@ import {
 import Cover from "../../data/pages/home/knight-chess.webp";
 import { CreateRoom } from "../../utils/Room";
 import { Helmet } from "react-helmet";
+import BackdropExample from "../../components/main/home/BackendDown";
 
 function PlayCard() {
   const [showUrl, setShowUrl] = useState(false);
@@ -58,6 +59,7 @@ function PlayCard() {
 
   return (
     <div>
+      <BackdropExample/>
       <Helmet>
         <meta
           name="description"
