@@ -61,37 +61,38 @@ function Room() {
           name="description"
           content={`Let's play together, join my room now!`}
         />
-        {isLoading ? (
-          <Center height="100vh">
-            <Box
-              textAlign="center"
-              padding="20px"
-              boxShadow="lg"
-              borderRadius="lg"
-            >
-              <Spinner size="xl" marginBottom="4" />
-              <Text fontSize="lg">Waiting for all players to join...</Text>
-            </Box>
-          </Center>
-        ) : (
-          <div>
-            <ChessBoard
-              userId={userId}
-              otherPlayerId={otherPlayerId}
-              roomId={roomId}
-            />
-            <Box display="flex" justifyContent="center">
-              <HStack spacing={4}>
-                <Tag colorScheme="blue">Your ID: {userId}</Tag>
-
-                <Tag colorScheme="green">Room ID: {roomId}</Tag>
-
-                <Tag colorScheme="red">Opponent's ID: {otherPlayerId}</Tag>
-              </HStack>
-            </Box>
-          </div>
-        )}
       </Helmet>
+
+      {isLoading ? (
+        <Center height="100vh">
+          <Box
+            textAlign="center"
+            padding="20px"
+            boxShadow="lg"
+            borderRadius="lg"
+          >
+            <Spinner size="xl" marginBottom="4" />
+            <Text fontSize="lg">Waiting for all players to join...</Text>
+          </Box>
+        </Center>
+      ) : (
+        <div>
+          <ChessBoard
+            userId={userId}
+            otherPlayerId={otherPlayerId}
+            roomId={roomId}
+          />
+          <Box display="flex" justifyContent="center">
+            <HStack spacing={4}>
+              <Tag colorScheme="blue">Your ID: {userId}</Tag>
+
+              <Tag colorScheme="green">Room ID: {roomId}</Tag>
+
+              <Tag colorScheme="red">Opponent's ID: {otherPlayerId}</Tag>
+            </HStack>
+          </Box>
+        </div>
+      )}
     </div>
   );
 }

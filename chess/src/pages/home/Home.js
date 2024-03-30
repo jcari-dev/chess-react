@@ -57,8 +57,14 @@ function PlayCard() {
   };
 
   return (
-    <Helmet>
-      <meta name="description" content="Home Page - Welcome to Chess Arena!" />
+    <div>
+      <Helmet>
+        <meta
+          name="description"
+          content="Home Page - Welcome to Chess Arena!"
+        />
+      </Helmet>
+
       <Flex
         width="100vw"
         height="100vh"
@@ -128,7 +134,7 @@ function PlayCard() {
           </VStack>
         </Box>
       </Flex>
-    </Helmet>
+    </div>
   );
 }
 
