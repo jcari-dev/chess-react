@@ -28,6 +28,21 @@ PlayChess leverages the best of modern web technologies to bring you a seamless,
 - **User registration (Coming Soon 🤞)**: Via OAuth and the supported social media connections! 
 - **Match History (Coming Soon 🙏)**: Re-watch a room's match history.
 
+## ✨ Demo
+
+<div align="center">
+  
+### [Live Demo](https://chess-9a6ec.web.app/) 
+
+
+![ezgif-3-58f2e31fe9](https://github.com/jcari-dev/chess-react/assets/65676916/a6d6f79b-caef-499b-8b69-fbfb5b0c5dae)
+
+
+**Playing against myself on localhost!**
+
+</div>
+
+
 ## 🛠 Built With
 
 ### Frontend
