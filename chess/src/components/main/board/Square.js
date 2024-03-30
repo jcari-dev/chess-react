@@ -26,7 +26,7 @@ const pieceToSVG = {
   w_pawn: WPawn,
 };
 
-function Square({ piece, color, notation, highlight }) {
+function Square({ piece, color, notation, highlight, check }) {
   const PieceSVG = piece ? pieceToSVG[piece] : null;
 
   const border = highlight ? "2px solid teal" : "";
@@ -36,6 +36,10 @@ function Square({ piece, color, notation, highlight }) {
       data.piece = "empty";
     }
   }
+
+  const svgStyle = {
+    filter: check ? "drop-shadow(0 0 8px red) drop-shadow(0 0 10px red) drop-shadow(0 0 12px red)" : "none",
+  };
 
   return (
     <div
@@ -53,7 +57,7 @@ function Square({ piece, color, notation, highlight }) {
         status({ piece: piece, notation: notation });
       }}
     >
-      {PieceSVG && <PieceSVG />}
+      {PieceSVG && <PieceSVG style={svgStyle} />}
     </div>
   );
 }
