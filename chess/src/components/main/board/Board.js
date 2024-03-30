@@ -30,6 +30,7 @@ function Board({ roomId, userId, otherPlayerId }) {
   const [boardData, setBoardData] = useState(initBoard);
   const [isMyTurn, setIsMyTurn] = useState(false);
   const [isPlayerBlack, setIsPlayerBlack] = useState(false);
+  const [check, setCheck] = useState(false);
 
   useEffect(() => {
     // Again this is only meant to run once.
@@ -132,7 +133,7 @@ function Board({ roomId, userId, otherPlayerId }) {
 
   function handleCastling(board, castlingRights) {
     let newCastlingRights = castlingRights;
-  
+
     if (board["e1"]?.piece !== "w_king") {
       newCastlingRights = newCastlingRights.replace("K", "").replace("Q", "");
     } else if (board["h1"]?.piece !== "w_rook") {
@@ -146,15 +147,15 @@ function Board({ roomId, userId, otherPlayerId }) {
     } else if (board["a8"]?.piece !== "b_rook") {
       newCastlingRights = newCastlingRights.replace("q", "");
     }
-  
+
     if (newCastlingRights === "") {
       newCastlingRights = "-";
     }
-    
-    setCastlingRights(newCastlingRights)
+
+    setCastlingRights(newCastlingRights);
     return newCastlingRights;
   }
-  
+
   function updateHighlights(positions) {
     const updatedBoard = { ...boardData }; // Shallow copy
     positions.forEach(function (position) {
@@ -170,6 +171,9 @@ function Board({ roomId, userId, otherPlayerId }) {
     Object.keys(updatedBoard).forEach(function (position) {
       if (updatedBoard[position].highlight) {
         updatedBoard[position].highlight = false;
+      }
+      if (updatedBoard[position].check) {
+        updatedBoard[position].check = false;
       }
     });
     setBoardData(updatedBoard);
@@ -194,10 +198,39 @@ function Board({ roomId, userId, otherPlayerId }) {
     return false;
   }
 
+  function displayCheck(boardData) {
+    let checkKingPosition;
+
+    let kingColor = isPlayerBlack ? "b_king" : "w_king";
+
+    for (let position in boardData) {
+      if (boardData[position].piece === kingColor) {
+        checkKingPosition = position;
+        break;
+      }
+    }
+    if (checkKingPosition) {
+      let boardWithKingOnCheck = { ...boardData }; // shallow copy
+
+      boardWithKingOnCheck[checkKingPosition].check = true;
+
+      console.log('KING SHOULD BE IN CHECK.', "This is check: ", check)
+
+      setBoardData(boardWithKingOnCheck);
+    }
+    return checkKingPosition;
+  }
+
   useEffect(() => {
     console.log(boardData);
     // TODO Why is this being used? It has something to do with the board state
   }, [boardData]);
+  useEffect(() => {
+    if (check) {
+      displayCheck(boardData);
+    }
+    // TODO Why is this being used? It has something to do with the board state
+  }, [check]);
 
   useEffect(() => {
     // Define the polling logic within the effect
@@ -211,6 +244,7 @@ function Board({ roomId, userId, otherPlayerId }) {
           clearInterval(intervalId); // Stop polling
           setTurnCount(result.turnCount);
           setHalfmoveClock(result.halfmoveClock);
+          setCheck(result.check);
         } else {
           setIsMyTurn(false);
           console.log("Not my turn yet, polling...");
@@ -233,6 +267,8 @@ function Board({ roomId, userId, otherPlayerId }) {
       return pollForTurn();
     }
   }, [isMyTurn, roomId, userId]);
+
+
 
   async function handleMove(data) {
     // Move is only needed if the square isnt empty.
@@ -284,6 +320,7 @@ function Board({ roomId, userId, otherPlayerId }) {
 
             clearHighlights();
 
+
             const prev = boardData; // Grabbing the board before posting it
 
             const boardDataPrePosting = {
@@ -306,7 +343,10 @@ function Board({ roomId, userId, otherPlayerId }) {
             setHalfmoveClock(validClock);
             console.log(validClock, "prior to v");
 
-            const newCastlingRights = handleCastling(boardDataPrePosting, castlingRights)
+            const newCastlingRights = handleCastling(
+              boardDataPrePosting,
+              castlingRights
+            );
 
             const validMove = await isItAValidMove({
               board: boardDataPrePosting,
@@ -328,7 +368,6 @@ function Board({ roomId, userId, otherPlayerId }) {
             setFirstClick(null);
             console.log("Piece should have been moved.");
             setIsMyTurn(false);
-            
           } else {
             console.log("Illegal move.");
             setFirstClick(null);
@@ -361,19 +400,22 @@ function Board({ roomId, userId, otherPlayerId }) {
             gridTemplateColumns: "repeat(8, 1fr)",
           }}
         >
-          {orderedEntries.map(([notation, { piece, color, highlight }]) => (
-            <div
-              key={notation}
-              onClick={() => handleMove({ notation: notation, piece: piece })}
-            >
-              <Square
-                piece={piece}
-                color={color}
-                notation={notation}
-                highlight={highlight}
-              />
-            </div>
-          ))}
+          {orderedEntries.map(
+            ([notation, { piece, color, highlight, check }]) => (
+              <div
+                key={notation}
+                onClick={() => handleMove({ notation: notation, piece: piece })}
+              >
+                <Square
+                  piece={piece}
+                  color={color}
+                  notation={notation}
+                  highlight={highlight}
+                  check={check}
+                />
+              </div>
+            )
+          )}
         </div>
       </div>
     </div>
