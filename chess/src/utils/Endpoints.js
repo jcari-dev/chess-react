@@ -13,6 +13,7 @@ const endpoints = {
   createRoom: `${API_BASE_URL}${process.env.REACT_APP_CREATE_ROOM_ENDPOINT}`,
   joinRoom: `${API_BASE_URL}${process.env.REACT_APP_JOIN_ROOM_ENDPOINT}`,
   validateMove: `${API_BASE_URL}${process.env.REACT_APP_VALIDATE_MOVE_ENDPOINT}`,
+  vitals: `${API_BASE_URL}${process.env.REACT_APP_VITALS}`,
 };
 
 export default endpoints;
