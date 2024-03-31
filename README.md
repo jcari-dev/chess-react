@@ -52,6 +52,4 @@ PlayChess leverages the best of modern web technologies to bring you a seamless,
 - **Django** provides the robust backend framework needed for secure API endpoints, smooth room management, and reliable user authentication, all while facilitating quick development.
 
 ### Database
-- **SQLite** supports our data storage needs with its simplicity and effectiveness, handling game states and user information effortlessly.
-
-
+- **PostgreSQL** My choice for its robustness, handling complex game states and user data with efficiency and reliability, perfectly scaling with our application's growth, also very nice integration with Django.
