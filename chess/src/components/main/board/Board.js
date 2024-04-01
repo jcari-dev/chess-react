@@ -31,6 +31,7 @@ function Board({ roomId, userId, otherPlayerId }) {
   const [isMyTurn, setIsMyTurn] = useState(false);
   const [isPlayerBlack, setIsPlayerBlack] = useState(false);
   const [check, setCheck] = useState(false);
+  const [winner, setWinner] = useState("")
 
   useEffect(() => {
     // Again this is only meant to run once.
@@ -237,14 +238,24 @@ function Board({ roomId, userId, otherPlayerId }) {
     const pollForTurn = () => {
       const intervalId = setInterval(async () => {
         const result = await isItMyTurn(roomId, userId);
-
-        if (result && result.myTurn && result.boardData) {
-          setIsMyTurn(true);
-          setBoardData(result.boardData);
+        console.log(result)
+        if(result.winner){
+          setWinner(result.winner)
           clearInterval(intervalId); // Stop polling
-          setTurnCount(result.turnCount);
-          setHalfmoveClock(result.halfmoveClock);
-          setCheck(result.check);
+          setBoardData(result.boardData);
+
+
+        }
+        if (result && result.myTurn && result.boardData) {
+
+            setIsMyTurn(true);
+            setBoardData(result.boardData);
+            clearInterval(intervalId); // Stop polling
+            setTurnCount(result.turnCount);
+            setHalfmoveClock(result.halfmoveClock);
+            setCheck(result.check);
+
+
         } else {
           setIsMyTurn(false);
           console.log("Not my turn yet, polling...");
@@ -385,7 +396,7 @@ function Board({ roomId, userId, otherPlayerId }) {
 
   return (
     <div>
-      <Turn myTurn={isMyTurn} />
+      <Turn myTurn={isMyTurn} winner={winner} isPlayerBlack={isPlayerBlack} />
       <div
         style={{
           display: "flex",

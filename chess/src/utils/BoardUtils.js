@@ -126,8 +126,9 @@ async function isItMyTurn(roomId, userId) {
     );
 
     console.log(response.data);
-
-    if (response.data && response.data.myTurn) {
+    if (response.data.winner) {
+      return response.data;
+    } else if (response.data && response.data.myTurn) {
       return response.data;
     } else {
       return false;
