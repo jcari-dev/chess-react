@@ -16,6 +16,7 @@ import Cover from "../../data/pages/home/knight-chess.webp";
 import { CreateRoom } from "../../utils/Room";
 import { Helmet } from "react-helmet";
 import BackdropExample from "../../components/main/home/BackendDown";
+import LoginButton from "../../components/main/login/Login";
 
 function PlayCard() {
   const [showUrl, setShowUrl] = useState(false);
@@ -59,11 +60,12 @@ function PlayCard() {
 
   return (
     <div>
-      <BackdropExample/>
+      <LoginButton />
+      <BackdropExample />
       <Helmet>
         <meta
           name="description"
-          content="Home Page - Welcome to Chess Arena!"
+          content="Home Page - Welcome to PlayChess!"
         />
       </Helmet>
 
@@ -116,6 +118,7 @@ function PlayCard() {
                 )}
               </VStack>
             )}
+
             <Box as="footer" width="full" padding="4" textAlign="center">
               <Text>
                 Made with{" "}
