@@ -128,7 +128,7 @@ const Profile = () => {
             <HStack justify="space-between">
               <Text>
                 Room:{" "}
-                <Link color="teal.500" href={`/history/${match.room_id}`}>
+                <Link color="teal.500" href={`/match-history/${match.room_id}`}>
                   {match.room_id}
                 </Link>
               </Text>

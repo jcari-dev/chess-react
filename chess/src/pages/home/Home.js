@@ -65,7 +65,7 @@ function PlayCard() {
       <Helmet>
         <meta
           name="description"
-          content="Home Page - Welcome to Chess Arena!"
+          content="Home Page - Welcome to PlayChess!"
         />
       </Helmet>
 
