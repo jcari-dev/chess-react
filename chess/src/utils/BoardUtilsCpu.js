@@ -106,7 +106,7 @@ async function isItMyTurn(roomId, userId) {
   try {
     const data = {
       roomId: roomId,
-      userId: userId,
+      userId: userId
     };
 
     const token = await getCsrfToken();
