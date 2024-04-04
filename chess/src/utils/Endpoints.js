@@ -14,6 +14,7 @@ const endpoints = {
   joinRoom: `${API_BASE_URL}${process.env.REACT_APP_JOIN_ROOM_ENDPOINT}`,
   validateMove: `${API_BASE_URL}${process.env.REACT_APP_VALIDATE_MOVE_ENDPOINT}`,
   vitals: `${API_BASE_URL}${process.env.REACT_APP_VITALS}`,
+  getProfile: `${API_BASE_URL}${process.env.REACT_APP_GET_PROFILE_ENDPOINT}`,
   cpuCreateRoom: `${API_BASE_URL}${process.env.REACT_APP_CPU_CREATE_ROOM}`,
   checkTurnCpu: `${API_BASE_URL}${process.env.REACT_APP_CHECK_TURN_CPU_ENDPOINT}`,
 };
