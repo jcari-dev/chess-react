@@ -9,14 +9,14 @@ import {
   Text,
   Image,
   Spinner,
-  Link,
-  useToast,
+  Link
 } from "@chakra-ui/react";
 import Cover from "../../data/pages/home/knight-chess.webp";
 import { CreateRoom } from "../../utils/Room";
 import { Helmet } from "react-helmet";
 import BackdropExample from "../../components/main/home/BackendDown";
 import LoginButton from "../../components/main/login/Login";
+import { useNavigate } from "react-router-dom";
 
 function PlayCard() {
   const [showUrl, setShowUrl] = useState(false);
@@ -33,31 +33,11 @@ function PlayCard() {
     setIsLoading(false);
   }
 
-  const toast = useToast();
 
-  const showToast = () => {
-    toast({
-      title: "Coming up soon!",
-      description: (
-        <>
-          Follow development on{" "}
-          <a
-            href="https://github.com/jcari-dev/chess-react/issues?q=is%3Aissue+is%3Aopen+label%3ACPU"
-            style={{ color: "blue.500" }}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            GitHub! 👀
-          </a>
-        </>
-      ),
-      status: "info",
-      duration: 9000,
-      isClosable: true,
-      position: "top",
-    });
+  const navigate = useNavigate();
+  const redirectToCpu = () => {
+    navigate('/cpu'); // Use navigate to change the URL to '/cpu'
   };
-
   return (
     <div>
       <LoginButton />
@@ -88,7 +68,7 @@ function PlayCard() {
               alt="Chess"
               transform="scaleX(-1)"
             />
-            <Button colorScheme="teal" onClick={showToast}>
+            <Button colorScheme="teal" onClick={redirectToCpu}>
               Play vs CPU
             </Button>
             <Button
