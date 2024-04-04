@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { getCsrfToken } from "../../utils/Auth";
+import endpoints from "../../utils/Endpoints";
 
 const Profile = () => {
   const [profileData, setProfileData] = useState(null);
@@ -25,7 +26,7 @@ const Profile = () => {
         const token = await getCsrfToken();
 
         const response = await axios.post(
-          "http://127.0.0.1:8000/api/get-profile/",
+          `${endpoints.getProfile}`,
           { userId: userId },
           {
             headers: {
