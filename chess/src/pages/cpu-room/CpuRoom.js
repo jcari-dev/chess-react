@@ -72,7 +72,7 @@ function Room() {
             borderRadius="lg"
           >
             <Spinner size="xl" marginBottom="4" />
-            <Text fontSize="lg">Waiting for all players to join...</Text>
+            <Text fontSize="lg">Loading...</Text>
           </Box>
         </Center>
       ) : (

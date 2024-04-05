@@ -27,11 +27,12 @@ function BoardCpu({ roomId, userId, otherPlayerId }) {
   const [notation, setNotation] = useState("");
   const [enPassant, setEnPassant] = useState("-");
   const [validMoves, setValidMoves] = useState([]);
+  const [moveScores, setMoveScores] = useState([]);
   const [boardData, setBoardData] = useState(initBoard);
   const [isMyTurn, setIsMyTurn] = useState(false);
   const [isPlayerBlack, setIsPlayerBlack] = useState(false);
   const [check, setCheck] = useState(false);
-  const [winner, setWinner] = useState("")
+  const [winner, setWinner] = useState("");
 
   useEffect(() => {
     // Again this is only meant to run once.
@@ -157,11 +158,14 @@ function BoardCpu({ roomId, userId, otherPlayerId }) {
     return newCastlingRights;
   }
 
-  function updateHighlights(positions) {
+  function updateHighlights(positions, scores) {
     const updatedBoard = { ...boardData }; // Shallow copy
-    positions.forEach(function (position) {
+    positions.forEach(function (position, index) {
       if (updatedBoard[position]) {
         updatedBoard[position].highlight = true;
+        if (scores && scores[index] !== undefined) {
+          updatedBoard[position].score = scores[index];
+        }
       }
     });
     setBoardData(updatedBoard);
@@ -172,6 +176,7 @@ function BoardCpu({ roomId, userId, otherPlayerId }) {
     Object.keys(updatedBoard).forEach(function (position) {
       if (updatedBoard[position].highlight) {
         updatedBoard[position].highlight = false;
+        updatedBoard[position].score = null;
       }
       if (updatedBoard[position].check) {
         updatedBoard[position].check = false;
@@ -215,7 +220,7 @@ function BoardCpu({ roomId, userId, otherPlayerId }) {
 
       boardWithKingOnCheck[checkKingPosition].check = true;
 
-      console.log('KING SHOULD BE IN CHECK.', "This is check: ", check)
+      console.log("KING SHOULD BE IN CHECK.", "This is check: ", check);
 
       setBoardData(boardWithKingOnCheck);
     }
@@ -238,24 +243,19 @@ function BoardCpu({ roomId, userId, otherPlayerId }) {
     const pollForTurn = () => {
       const intervalId = setInterval(async () => {
         const result = await isItMyTurn(roomId, userId);
-        console.log(result)
-        if(result.winner){
-          setWinner(result.winner)
+        console.log(result);
+        if (result.winner) {
+          setWinner(result.winner);
           clearInterval(intervalId); // Stop polling
           setBoardData(result.boardData);
-
-
         }
         if (result && result.myTurn && result.boardData) {
-
-            setIsMyTurn(true);
-            setBoardData(result.boardData);
-            clearInterval(intervalId); // Stop polling
-            setTurnCount(result.turnCount);
-            setHalfmoveClock(result.halfmoveClock);
-            setCheck(result.check);
-
-
+          setIsMyTurn(true);
+          setBoardData(result.boardData);
+          clearInterval(intervalId); // Stop polling
+          setTurnCount(result.turnCount);
+          setHalfmoveClock(result.halfmoveClock);
+          setCheck(result.check);
         } else {
           setIsMyTurn(false);
           console.log("Not my turn yet, polling...");
@@ -279,8 +279,6 @@ function BoardCpu({ roomId, userId, otherPlayerId }) {
     }
   }, [isMyTurn, roomId, userId]);
 
-
-
   async function handleMove(data) {
     // Move is only needed if the square isnt empty.
     // Comment is prob outdated but this should still hold true to some degree
@@ -302,7 +300,7 @@ function BoardCpu({ roomId, userId, otherPlayerId }) {
 
           console.log(data.piece, data.notation);
 
-          const validMoves = await getValidMoves({
+          const moveData = await getValidMoves({
             board: boardData,
             pieceMoving: data.piece,
             target: data.notation,
@@ -310,13 +308,22 @@ function BoardCpu({ roomId, userId, otherPlayerId }) {
             halfmoveClock: halfmoveClock,
             castlingRights: castlingRights,
             enPassant: enPassant,
+            roomId: roomId,
           });
+
+          const validMoves = await moveData.legalMoves;
+
+          let scoreData = []
+          if (moveData.scores) {
+            scoreData = await moveData.scores;
+          }
 
           setValidMoves(validMoves);
 
           console.log(validMoves, "These are the valid moves.");
+          console.log(scoreData, "These are their scores.");
 
-          updateHighlights(validMoves);
+          updateHighlights(validMoves, scoreData);
         } else {
           if (validMoves.includes(data.notation)) {
             console.log(firstClick);
@@ -330,7 +337,6 @@ function BoardCpu({ roomId, userId, otherPlayerId }) {
             );
 
             clearHighlights();
-
 
             const prev = boardData; // Grabbing the board before posting it
 
@@ -412,7 +418,7 @@ function BoardCpu({ roomId, userId, otherPlayerId }) {
           }}
         >
           {orderedEntries.map(
-            ([notation, { piece, color, highlight, check }]) => (
+            ([notation, { piece, color, highlight, check, score }]) => (
               <div
                 key={notation}
                 onClick={() => handleMove({ notation: notation, piece: piece })}
@@ -423,6 +429,7 @@ function BoardCpu({ roomId, userId, otherPlayerId }) {
                   notation={notation}
                   highlight={highlight}
                   check={check}
+                  score={score}
                 />
               </div>
             )

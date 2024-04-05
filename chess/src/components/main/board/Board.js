@@ -159,6 +159,7 @@ function Board({ roomId, userId, otherPlayerId }) {
 
   function updateHighlights(positions) {
     const updatedBoard = { ...boardData }; // Shallow copy
+    console.log(positions)
     positions.forEach(function (position) {
       if (updatedBoard[position]) {
         updatedBoard[position].highlight = true;
@@ -302,7 +303,7 @@ function Board({ roomId, userId, otherPlayerId }) {
 
           console.log(data.piece, data.notation);
 
-          const validMoves = await getValidMoves({
+          const moveData = await getValidMoves({
             board: boardData,
             pieceMoving: data.piece,
             target: data.notation,
@@ -312,6 +313,8 @@ function Board({ roomId, userId, otherPlayerId }) {
             enPassant: enPassant,
           });
 
+          const validMoves = await moveData.legalMoves;
+          
           setValidMoves(validMoves);
 
           console.log(validMoves, "These are the valid moves.");

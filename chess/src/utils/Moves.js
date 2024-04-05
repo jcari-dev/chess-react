@@ -21,9 +21,10 @@ async function getValidMoves(data) {
       }
     );
     if (response.data && response.data.legalMoves) {
-      const legalMoves = response.data.legalMoves;
+      // response.data.legalMoves;
+      // response.data.scores on practice mode;
       // console.log(legalMoves)
-      return legalMoves;
+      return response.data;
     } else {
       return false;
     }
