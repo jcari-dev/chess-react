@@ -72,7 +72,7 @@ function CpuDispatch() {
           withCredentials: true,
         }
       );
-      navigate(`/cpu/${data.room}`);
+      navigate(`/cpu/${data.room}/`);
     } catch (error) {
       console.error("Error starting the game:", error);
     }
