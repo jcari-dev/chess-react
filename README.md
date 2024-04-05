@@ -41,15 +41,14 @@ PlayChess leverages the best of modern web technologies to bring you a seamless,
 ## ✨ Demo
 
 <div align="center">
-  
+
 ### [Live Demo](https://chess-9a6ec.web.app/) 
 
-
+**Playing against myself on localhost!**
 ![ezgif-3-58f2e31fe9](https://github.com/jcari-dev/chess-react/assets/65676916/a6d6f79b-caef-499b-8b69-fbfb5b0c5dae)
+
 ### Move Scoring
 ![image](https://github.com/jcari-dev/chess-react/assets/65676916/74df2ed1-872b-4f74-b583-33e2f33e760b)
-
-**Playing against myself on localhost!**
 
 </div>
 
