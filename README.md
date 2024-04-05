@@ -24,9 +24,19 @@ PlayChess leverages the best of modern web technologies to bring you a seamless,
 
 - **Real-Time Multiplayer**: Create a room and challenge a friend or a foe with a unique URL.
 - **Move Validation**: Ensures all moves adhere to official chess rules, with visual aids.
-- **AI Opponents (Coming Soon 👀)**: Practice your skills against AI with varying difficulty levels, powered by the formidable Stockfish engine.
-- **User registration (Coming Soon 🤞)**: Via OAuth and the supported social media connections! 
-- **Match History (Coming Soon 🙏)**: Re-watch a room's match history.
+- **Move Scoring / Practice Mode**: If enabled uses the Stockfish engine to calculate the "goodness" of each move and provide a visual aid to indicate it.
+    - ![image](https://github.com/jcari-dev/chess-react/assets/65676916/d70840e1-c8c2-4adc-9434-6bd237753317)
+    - White Knight on G1 being selected and showing scores of possibles moves.
+
+- **AI Opponents**: Practice your skills against AI with varying difficulty levels, powered by the formidable Stockfish engine.
+    - Current difficulties:
+    - ![image](https://github.com/jcari-dev/chess-react/assets/65676916/56d78074-c3e5-4cfb-832f-a3d41bb0cd27)
+
+- **User registration**: Via OAuth and the supported social media connections! 
+- **Match History**: Allows you to track your specific match history and display some match data.
+    - ![image](https://github.com/jcari-dev/chess-react/assets/65676916/462a4892-1eb5-452b-9a96-7fd3138caad1)
+
+
 
 ## ✨ Demo
 
@@ -36,7 +46,8 @@ PlayChess leverages the best of modern web technologies to bring you a seamless,
 
 
 ![ezgif-3-58f2e31fe9](https://github.com/jcari-dev/chess-react/assets/65676916/a6d6f79b-caef-499b-8b69-fbfb5b0c5dae)
-
+### Move Scoring
+![image](https://github.com/jcari-dev/chess-react/assets/65676916/74df2ed1-872b-4f74-b583-33e2f33e760b)
 
 **Playing against myself on localhost!**
 
