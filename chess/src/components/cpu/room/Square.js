@@ -1,3 +1,4 @@
+import React from 'react';
 import { ReactComponent as BKing } from "../../../data/pieces/b_king.svg";
 import { ReactComponent as BQueen } from "../../../data/pieces/b_queen.svg";
 import { ReactComponent as BBishop } from "../../../data/pieces/b_bishop.svg";
@@ -26,16 +27,10 @@ const pieceToSVG = {
   w_pawn: WPawn,
 };
 
-function Square({ piece, color, notation, highlight, check }) {
+function Square({ piece, color, notation, highlight, check, score }) {
   const PieceSVG = piece ? pieceToSVG[piece] : null;
 
   const border = highlight ? "2px solid teal" : "";
-
-  function status(data) {
-    if (!data.piece) {
-      data.piece = "empty";
-    }
-  }
 
   const svgStyle = {
     filter: check ? "drop-shadow(0 0 8px red) drop-shadow(0 0 10px red) drop-shadow(0 0 12px red)" : "none",
@@ -51,12 +46,24 @@ function Square({ piece, color, notation, highlight, check }) {
         justifyContent: "center",
         alignItems: "center",
         display: "flex",
+        position: "relative", 
         border: border,
       }}
-      onClick={() => {
-        status({ piece: piece, notation: notation });
-      }}
+      onClick={() => {}}
     >
+      {score && (
+        <div style={{
+          position: 'absolute',
+          left: '5px',
+          top: '5px',
+          color: 'green',
+          fontWeight: 'bold',
+          fontSize: '12px',
+          // textShadow: '1px 1px 2px black', 
+        }}>
+          {score}
+        </div>
+      )}
       {PieceSVG && <PieceSVG style={svgStyle} />}
     </div>
   );

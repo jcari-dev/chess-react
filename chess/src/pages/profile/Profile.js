@@ -140,6 +140,9 @@ const Profile = () => {
               {userId === match.player_a ? match.player_b : match.player_a}
             </Text>
             <Text>
+              Turns: {match.turns}
+            </Text>
+            <Text>
               Result:{" "}
               {match.winner === "Unknown"
                 ? "PENDING"

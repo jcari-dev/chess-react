@@ -9,20 +9,26 @@ import {
   SliderFilledTrack,
   SliderThumb,
   Text,
+  Switch,
   VStack,
+  Tooltip,
+  IconButton,
+  HStack,
 } from "@chakra-ui/react";
+import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import endpoints from "../../utils/Endpoints";
 import { getCsrfToken } from "../../utils/Auth";
 import { useAuth0 } from "@auth0/auth0-react";
 
-
 function CpuDispatch() {
   const [difficulty, setDifficulty] = React.useState(0);
   const [selectedColor, setSelectedColor] = React.useState("random");
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth0();
+  const [practiceMode, setPracticeMode] = React.useState(false);
+  const [modeOnOff, setModeOnOff] = React.useState("Off");
   const userId =
     isAuthenticated && user ? user.name : localStorage.getItem("userId");
   const difficulties = [
@@ -37,6 +43,15 @@ function CpuDispatch() {
     setSelectedColor(color);
   };
 
+  const togglePracticeMode = () => {
+    setPracticeMode(!practiceMode);
+    if (modeOnOff === "Off") {
+      setModeOnOff("On");
+    } else {
+      setModeOnOff("Off");
+    }
+  };
+
   const beginGame = async () => {
     try {
       const token = await getCsrfToken();
@@ -46,7 +61,8 @@ function CpuDispatch() {
         {
           difficulty: difficulties[difficulty],
           color: selectedColor,
-          userId: userId
+          userId: userId,
+          practiceMode: practiceMode,
         },
         {
           headers: {
@@ -56,10 +72,9 @@ function CpuDispatch() {
           withCredentials: true,
         }
       );
-      navigate(`/cpu/${data.room}`); // Redirect to the new room
+      navigate(`/cpu/${data.room}`);
     } catch (error) {
       console.error("Error starting the game:", error);
-      // Handle error (e.g., show an error message)
     }
   };
 
@@ -121,6 +136,29 @@ function CpuDispatch() {
               Black
             </Button>
           </ButtonGroup>
+          <HStack>
+            <Text fontSize="xl">Practice Mode: {modeOnOff}</Text>
+
+            <Tooltip
+              label="Practice mode evaluates and scores potential moves for the chosen piece."
+              fontSize="sm"
+              placement="right"
+              closeOnClick={false}
+              hasArrow
+            >
+              <IconButton
+                variant="ghost"
+                icon={<QuestionOutlineIcon />}
+                aria-label="Practice mode info"
+              />
+            </Tooltip>
+          </HStack>
+
+          <Switch
+            isChecked={practiceMode}
+            onChange={togglePracticeMode}
+            colorScheme="green"
+          />
 
           <Button colorScheme="red" onClick={beginGame}>
             BEGIN!
