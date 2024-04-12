@@ -39,7 +39,7 @@ function PlayCard() {
 
   const navigate = useNavigate();
   const redirectToCpu = () => {
-    navigate("/cpu"); // Use navigate to change the URL to '/cpu'
+    navigate("/cpu");
   };
   return (
     <div>
