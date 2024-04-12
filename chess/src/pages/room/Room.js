@@ -1,11 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Spinner, Box, Center, Text, Tag, HStack } from "@chakra-ui/react";
+import {
+  Spinner,
+  Box,
+  Center,
+  Text,
+  Tag,
+  HStack,
+  Button,
+  Input,
+  useClipboard,
+  InputGroup,
+  InputRightElement,
+  useToast,
+} from "@chakra-ui/react";
 import axios from "axios";
 import { JoinRoom } from "../../utils/Room";
 import ChessBoard from "../../components/main/board/Board";
 import endpoints from "../../utils/Endpoints";
 import { Helmet } from "react-helmet";
+import { FaCopy } from "react-icons/fa";
 
 function Room() {
   const { roomId } = useParams();
@@ -13,6 +27,22 @@ function Room() {
   const [userId, setUserId] = useState("");
   const [otherPlayerId, setOtherPlayerId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+
+  const url = window.location.href;
+  const { hasCopied, onCopy } = useClipboard(url);
+
+  const toast = useToast();
+
+  const handleCopy = () => {
+    onCopy();
+    toast({
+      title: "URL Successfully Copied!",
+      status: "success",
+      duration: 2000,
+      isClosable: true,
+      position: "top",
+    });
+  };
 
   useEffect(() => {
     let storedUserId = localStorage.getItem("userId");
@@ -24,6 +54,7 @@ function Room() {
   }, []);
 
   // Join room and start polling once userId is set
+
   useEffect(() => {
     if (!userId) return; // Exit if userId is not set
 
@@ -67,12 +98,34 @@ function Room() {
         <Center height="100vh">
           <Box
             textAlign="center"
-            padding="20px"
-            boxShadow="lg"
+            p="20px"
+            boxShadow="2xl"
             borderRadius="lg"
+            bg="white"
+            maxW="lg"
+            w="full"
+            m="auto"
+            spacing={4}
           >
             <Spinner size="xl" marginBottom="4" />
-            <Text fontSize="lg">Waiting for all players to join...</Text>
+            <Text fontSize="lg" mb="4">
+              Waiting for all players to join...
+            </Text>
+            <InputGroup size="md" mb="4">
+              <Input
+                pr="4.5rem"
+                value={url}
+                isReadOnly
+              />
+              <InputRightElement width="4.5rem">
+                <Button h="1.75rem" size="sm" onClick={handleCopy}>
+                  <FaCopy />
+                </Button>
+              </InputRightElement>
+            </InputGroup>
+            <Text fontSize="lg" mt="4">
+              Copy this URL with the friend you wish to play against. :)
+            </Text>
           </Box>
         </Center>
       ) : (
