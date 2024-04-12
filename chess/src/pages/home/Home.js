@@ -9,7 +9,7 @@ import {
   Text,
   Image,
   Spinner,
-  Link
+  Link,
 } from "@chakra-ui/react";
 import Cover from "../../data/pages/home/knight-chess.webp";
 import { CreateRoom } from "../../utils/Room";
@@ -29,24 +29,24 @@ function PlayCard() {
     setIsLoading(true);
     const roomId = await CreateRoom();
     setUniqueUrl(`${window.location.origin}/room/${roomId}`);
+      window.open(`${window.location.origin}/room/${roomId}`, '_blank', 'noopener,noreferrer');
+
     setShowUrl(true);
     setIsLoading(false);
   }
 
 
+
   const navigate = useNavigate();
   const redirectToCpu = () => {
-    navigate('/cpu'); // Use navigate to change the URL to '/cpu'
+    navigate("/cpu"); // Use navigate to change the URL to '/cpu'
   };
   return (
     <div>
       <LoginButton />
       <BackdropExample />
       <Helmet>
-        <meta
-          name="description"
-          content="Home Page - Welcome to PlayChess!"
-        />
+        <meta name="description" content="Home Page - Welcome to PlayChess!" />
       </Helmet>
 
       <Flex
