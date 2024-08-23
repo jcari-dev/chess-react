@@ -21,6 +21,8 @@ import { useNavigate } from "react-router-dom";
 import endpoints from "../../utils/Endpoints";
 import { getCsrfToken } from "../../utils/Auth";
 import { useAuth0 } from "@auth0/auth0-react";
+import BugNotifier from "../../components/main/home/BugNotifier";
+
 
 function CpuDispatch() {
   const [difficulty, setDifficulty] = React.useState(0);
@@ -80,6 +82,7 @@ function CpuDispatch() {
 
   return (
     <Flex height="100vh" alignItems="center" justifyContent="center">
+      <BugNotifier/>
       <Box width="60%" p={5} shadow="md" borderWidth="1px">
         <VStack spacing={4}>
           <Text fontSize="xl">Choose Your Difficulty</Text>
