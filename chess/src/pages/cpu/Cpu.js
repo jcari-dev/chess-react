@@ -23,7 +23,6 @@ import { getCsrfToken } from "../../utils/Auth";
 import { useAuth0 } from "@auth0/auth0-react";
 import BugNotifier from "../../components/main/home/BugNotifier";
 
-
 function CpuDispatch() {
   const [difficulty, setDifficulty] = React.useState(0);
   const [selectedColor, setSelectedColor] = React.useState("random");
