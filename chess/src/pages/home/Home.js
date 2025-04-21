@@ -17,6 +17,7 @@ import { Helmet } from "react-helmet";
 import BackdropExample from "../../components/main/home/BackendDown";
 import LoginButton from "../../components/main/login/Login";
 import { useNavigate } from "react-router-dom";
+import ServerMigration from "../../components/main/home/ServerMigration";
 
 
 function PlayCard() {
@@ -45,7 +46,8 @@ function PlayCard() {
   return (
     <div>
       <LoginButton />
-      <BackdropExample />
+      {/* <BackdropExample /> */}
+      <ServerMigration />
       <Helmet>
         <meta name="description" content="Home Page - Welcome to PlayChess!" />
       </Helmet>
