@@ -41,9 +41,9 @@ function ServerMigration() {
           <ModalCloseButton />
           <ModalBody>
             <Text mb={4}>
-              I am currently migrating the backend server to Nginx, scheduled to
-              start on 10/23/2024, with an expected completion by 10/24/2024
-              (fingers crossed).
+              Hey, thank you for checking my project! I am currently migrating
+              its infrastructure so it is easier for me to maintain! The migration
+              should be completed no later than April 26th, 2025.
             </Text>
             <Text mb={4}>
               The app is currently not functional. My apologies for any
