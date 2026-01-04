@@ -25,11 +25,7 @@ function ServerMigration() {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
-    const checkServerResponse = () => {
-      onOpen();
-    };
-
-    checkServerResponse();
+    onOpen();
   }, [onOpen]);
 
   return (
@@ -41,18 +37,18 @@ function ServerMigration() {
           <ModalCloseButton />
           <ModalBody>
             <Text mb={4}>
-              Hey, thank you for checking my project! I am currently migrating
-              its infrastructure so it is easier for me to maintain! The migration
-              should be completed no later than April 26th, 2025.
+              Hey, thank you for checking out this project. It is no longer
+              maintained and the live app has been sunsetted.
             </Text>
-            <Text mb={4}>
-              The app is currently not functional. My apologies for any
-              inconvenience caused!
+
+            <Text fontSize="sm" opacity={0.8}>
+              Every time I checked the server logs, I noticed quite a few visitors.
+              Thanks again for all the support, it truly means a lot!
             </Text>
           </ModalBody>
           <ModalFooter>
             <Button colorScheme="blue" mr={3} onClick={onClose}>
-              Got it, I will be back later!
+              Got it
             </Button>
           </ModalFooter>
         </ModalContent>
