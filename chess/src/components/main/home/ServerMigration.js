@@ -10,6 +10,7 @@ import {
   Text,
   useDisclosure,
   Button,
+  Link,
 } from "@chakra-ui/react";
 
 function ServerMigration() {
@@ -27,6 +28,8 @@ function ServerMigration() {
   useEffect(() => {
     onOpen();
   }, [onOpen]);
+
+  const GITHUB_URL = "https://github.com/jcari-dev/chess-react";
 
   return (
     <>
@@ -47,8 +50,17 @@ function ServerMigration() {
             </Text>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
-              Got it
+            <Button
+              as={Link}
+              href={GITHUB_URL}
+              isExternal
+              colorScheme="blue"
+              mr={3}
+            >
+              View on GitHub
+            </Button>
+            <Button variant="ghost" onClick={onClose}>
+              Close
             </Button>
           </ModalFooter>
         </ModalContent>
