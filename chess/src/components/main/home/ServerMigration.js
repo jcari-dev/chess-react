@@ -33,7 +33,7 @@ function ServerMigration() {
       <Modal isCentered isOpen={isOpen} onClose={onClose}>
         <OverlayOne />
         <ModalContent>
-          <ModalHeader>Server Migration</ModalHeader>
+          <ModalHeader>Project Sunset</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Text mb={4}>
