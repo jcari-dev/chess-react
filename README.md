@@ -3,7 +3,16 @@
 
 # PlayChess - React Frontend
 
-# Play Live Here: https://jorgeschess.app/
+----
+⚠️ **Project Status: Sunsetted**  
+
+This project is no longer actively maintained and the live deployment is no longer guaranteed to be functional.  
+
+The repository remains available as a reference for features, architecture, and implementation details.  
+----
+
+
+# Legacy Site Here: https://jorgeschess.app/
 
 👑 A dynamic, real-time chess experience for enthusiasts and strategists alike, powered by React and Django.
 
